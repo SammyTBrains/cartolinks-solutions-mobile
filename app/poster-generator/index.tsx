@@ -284,24 +284,49 @@ export default function PosterGeneratorScreen() {
         </View>
       </ScrollView>
       <View className="p-4 mt-1" style={{ paddingBottom: insets.bottom + 12 }}>
-        <Pressable
-          className="h-14 rounded-xl bg-[#eaeaea] justify-center items-center flex-row px-6 gap-3"
+        <TouchableOpacity
+          className="h-14 rounded-xl bg-[#eaeaea] justify-center items-center flex-row px-7 gap-3"
           onPress={() => {}}
           accessibilityRole="button"
         >
-          <LinearGradient
-            colors={["#27D1E7", "#7C4DFF"]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={{ width: 16, height: 16, borderRadius: 8 }}
-          />
+          <View
+            style={{
+              position: "relative",
+              width: 30,
+              height: 30,
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            {/* Glow */}
+            <LinearGradient
+              colors={["#2CE9FF55", "#7C4DFF22"]}
+              start={{ x: 0.3, y: 0.2 }}
+              end={{ x: 0.9, y: 1 }}
+              style={{
+                position: "absolute",
+                width: 30,
+                height: 30,
+                borderRadius: 15,
+                filter: "blur(8px)" as any,
+                opacity: 1,
+              }}
+            />
+            {/* Core gradient dot */}
+            <LinearGradient
+              colors={["#27D1E7", "#7C4DFF"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={{ width: 16, height: 16, borderRadius: 8 }}
+            />
+          </View>
           <ThemedText
             style={{ fontSize: 18 }}
             className="text-[#1C1E22] font-semibold"
           >
             Generate
           </ThemedText>
-        </Pressable>
+        </TouchableOpacity>
       </View>
     </ThemedView>
   );
