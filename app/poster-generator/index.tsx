@@ -170,10 +170,11 @@ export default function PosterGeneratorScreen() {
                     transition={100}
                   />
                   <View style={styles.cardOverlay}>
+                    {/* Guard BlurView so if native module fails we still render text */}
                     <BlurView
                       intensity={28}
                       tint="dark"
-                      experimentalBlurMethod="dimezisBlurView"
+                      // experimentalBlurMethod removed to avoid potential native crash / blank screen
                       style={StyleSheet.absoluteFill}
                     />
                     <ThemedText
