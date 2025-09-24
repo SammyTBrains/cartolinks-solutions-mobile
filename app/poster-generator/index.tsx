@@ -328,8 +328,9 @@ export default function PosterGeneratorScreen() {
             {/* Core gradient dot */}
             <LinearGradient
               colors={["#27D1E7", "#7C4DFF"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
+              // Adjusted direction: bottom-left to top-right for stronger perceived lighting
+              start={{ x: 0, y: 1 }}
+              end={{ x: 1, y: 0 }}
               style={{
                 width: 16,
                 height: 16,
