@@ -2,6 +2,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
+import { Foundation } from "@expo/vector-icons";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
@@ -183,7 +184,7 @@ export default function PosterGeneratorScreen() {
       </View>
       <View className="h-px bg-[#1E2126] mt-[14px]" />
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 120 }}
+        contentContainerStyle={{ paddingBottom: 70 }}
         showsVerticalScrollIndicator={false}
       >
         <View className="px-5 my-1 pt-4">
@@ -245,8 +246,8 @@ export default function PosterGeneratorScreen() {
             );
           }}
         />
-        <View className="px-5 pt-5">
-          <View className="min-h-[180px] bg-[#1C1E22] rounded-2xl border border-[#2B2E35] overflow-hidden pb-3">
+        <View className="px-5 mt-7">
+          <View className="min-h-[180px] bg-[#141517] rounded-2xl border border-[#141517] overflow-hidden pb-3">
             <TextInput
               multiline
               value={prompt}
@@ -255,60 +256,53 @@ export default function PosterGeneratorScreen() {
               placeholderTextColor={"#9BA1A6"}
               style={{
                 color: Colors.dark.text,
-                padding: 12,
-                fontSize: 18,
-                lineHeight: 26,
-                flex: 1,
+                paddingHorizontal: 12,
+                fontSize: 16,
               }}
             />
             <Pressable
-              className="absolute right-3 bottom-3 w-10 h-10 rounded-xl bg-[#2D2F36] justify-center items-center border border-[#34373E]"
+              className="absolute right-3 bottom-3 w-10 h-10 rounded-xl bg-transparent justify-center items-center "
               onPress={() => {}}
             >
-              <IconSymbol name="photo" color="#fff" size={18} />
+              <Foundation name="photo" size={24} color="#bdbfc1ff" />
             </Pressable>
           </View>
         </View>
-        <View className="px-5 pt-4">
-          <ThemedText className="text-[15px] font-semibold text-[#9BA1A6] mb-1">
+        <View className="px-5 mt-7">
+          <ThemedText className="text-[11px] text-[#666768] mb-2 ml-1">
             Settings
           </ThemedText>
           <SettingRow label="Size" value="1080 x 1920 px" />
           <SettingRow label="Category" value="Foods and beverage" />
         </View>
-        <View
-          className="absolute left-0 right-0 bottom-0 p-4"
-          style={{ paddingBottom: insets.bottom + 12 }}
-        >
-          <Pressable
-            className="h-14 rounded-full bg-[#F1F2FF] justify-center items-center flex-row px-6 gap-3"
-            onPress={() => {}}
-            accessibilityRole="button"
-          >
-            <LinearGradient
-              colors={["#27D1E7", "#7C4DFF"]}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={{ width: 30, height: 30, borderRadius: 15 }}
-            />
-            <ThemedText className="text-[#1C1E22] font-bold text-lg">
-              Generate
-            </ThemedText>
-          </Pressable>
-        </View>
       </ScrollView>
+      <View className="p-4 mt-1" style={{ paddingBottom: insets.bottom + 12 }}>
+        <Pressable
+          className="h-14 rounded-full bg-[#F1F2FF] justify-center items-center flex-row px-6 gap-3"
+          onPress={() => {}}
+          accessibilityRole="button"
+        >
+          <LinearGradient
+            colors={["#27D1E7", "#7C4DFF"]}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={{ width: 30, height: 30, borderRadius: 15 }}
+          />
+          <ThemedText className="text-[#1C1E22] font-bold text-lg">
+            Generate
+          </ThemedText>
+        </Pressable>
+      </View>
     </ThemedView>
   );
 }
 
 function SettingRow({ label, value }: { label: string; value: string }) {
   return (
-    <View className="h-16 bg-[#1C1E22] rounded-2xl border border-[#2B2E35] px-5 flex-row items-center mb-3">
+    <View className="h-16 bg-[#141517] rounded-2xl px-5 flex-row items-center mb-3">
       <ThemedText className="text-[#9BA1A6] text-base">{label}</ThemedText>
       <View style={{ flex: 1 }} />
-      <ThemedText className="text-white text-base font-semibold">
-        {value}
-      </ThemedText>
+      <ThemedText className="text-[#666768] text-base">{value}</ThemedText>
       <View style={{ width: 8 }} />
       <IconSymbol name="chevron.right" color="#9BA1A6" size={20} />
     </View>
