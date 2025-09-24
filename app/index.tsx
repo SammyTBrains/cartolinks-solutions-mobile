@@ -1,4 +1,4 @@
-import { Link } from "expo-router";
+import { Link, Stack } from "expo-router";
 import { Pressable, Text, View } from "react-native";
 
 export default function Index() {
@@ -10,7 +10,7 @@ export default function Index() {
         alignItems: "center",
       }}
     >
-      <Text>Edit app/index.tsx to edit this screen.</Text>
+      <Stack.Screen options={{ headerShown: false }} />
       <View style={{ height: 16 }} />
       <Link href="/poster-generator" asChild>
         <Pressable
