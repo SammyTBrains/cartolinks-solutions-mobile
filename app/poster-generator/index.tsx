@@ -9,18 +9,17 @@ import { useState } from "react";
 import {
   FlatList,
   LayoutChangeEvent,
-  Platform,
   Pressable,
   ScrollView,
   TextInput,
   View,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type Category = {
   id: string;
   title: string;
   image: any;
-  tags?: string[];
   badge?: string;
 };
 
@@ -29,8 +28,6 @@ const CATEGORIES: Category[] = [
     id: "display",
     title: "display",
     image: require("../../assets/images/thumbnails/display.jpeg"),
-    // first card shows two inline text labels in the bottom bar
-    tags: ["display", "Prod"],
   },
   {
     id: "promotion",
@@ -77,15 +74,32 @@ export default function PosterGeneratorScreen() {
   }>({ x: 0, width: 0 });
 
   const active = tab === "smart" ? smartLayout : advancedLayout;
+  const insets = useSafeAreaInsets();
+
+  // Approx tint colors for bottom labels (could be replaced by real image color extraction later)
+  const CARD_TINTS: Record<string, string> = {
+    display: "#5F4937",
+    promotion: "#6A6A6A",
+    branding: "#3F4247",
+    announcement: "#0C7FAF",
+    party: "#5D3F2D",
+  };
+
+  function tintBg(id: string) {
+    const hex = CARD_TINTS[id] || "#1C1E22";
+    const clean = hex.replace("#", "");
+    const num = parseInt(clean, 16);
+    const r = (num >> 16) & 255;
+    const g = (num >> 8) & 255;
+    const b = num & 255;
+    return `rgba(${r},${g},${b},0.88)`; // unified alpha
+  }
 
   return (
     <ThemedView className="flex-1">
       <Stack.Screen options={{ headerShown: false }} />
       {/* Header + tabs */}
-      <View
-        className="px-4"
-        style={{ paddingTop: Platform.OS === "ios" ? 8 : 8 }}
-      >
+      <View className="px-4" style={{ paddingTop: insets.top + 6 }}>
         <Pressable
           accessibilityRole="button"
           className="w-11 h-11 justify-center items-start"
@@ -94,9 +108,9 @@ export default function PosterGeneratorScreen() {
           <IconSymbol name="xmark" color="#fff" size={24} />
         </Pressable>
 
-        <View className="mt-1 items-center gap-3">
-          <View className="relative items-center">
-            <View className="flex-row gap-6 items-center">
+        <View className="mt-1 gap-3">
+          <View className="relative">
+            <View className="flex-row gap-9 items-center">
               <Pressable
                 onPress={() => setTab("smart")}
                 onLayout={(e: LayoutChangeEvent) =>
@@ -126,23 +140,22 @@ export default function PosterGeneratorScreen() {
                 </ThemedText>
               </Pressable>
             </View>
-            {/* Gradient underline extended */}
-            <LinearGradient
-              colors={["#27D1E7", "#7C4DFF"]}
-              start={{ x: 0, y: 0.5 }}
-              end={{ x: 1, y: 0.5 }}
-              style={{
-                position: "absolute",
-                left: Math.max(active.x - 10, 0),
-                bottom: -8,
-                width: Math.max(
-                  Math.min(active.width * 1.8, 260),
-                  active.width + 60
-                ),
-                height: 3,
-                borderRadius: 3,
-              }}
-            />
+            {active.width > 0 && (
+              <LinearGradient
+                colors={["#27D1E7", "#7C4DFF"]}
+                start={{ x: 0, y: 0.5 }}
+                end={{ x: 1, y: 0.5 }}
+                style={{
+                  position: "absolute",
+                  left: tab === "smart" ? 0 : active.x - 4,
+                  bottom: -8,
+                  width:
+                    (tab === "smart" ? smartLayout.width : active.width) + 8,
+                  height: 3,
+                  borderRadius: 3,
+                }}
+              />
+            )}
           </View>
         </View>
       </View>
@@ -152,10 +165,10 @@ export default function PosterGeneratorScreen() {
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="px-5 pt-5">
+        <View className="px-5 pt-4">
           <ThemedText
             type="title"
-            className="text-white text-[23px] leading-8 font-bold mb-4"
+            className="text-white text-[18px] leading-6 font-semibold mb-4"
           >
             What type of posters do you want to create?
           </ThemedText>
@@ -181,20 +194,20 @@ export default function PosterGeneratorScreen() {
                   source={item.image}
                   style={{ width: "100%", height: "100%" }}
                   contentFit="cover"
-                  onError={(error) => {
-                    console.warn("Image failed to load", item.id, error);
-                  }}
+                  onError={(error) =>
+                    console.warn("Image failed to load", item.id, error)
+                  }
                   transition={100}
                 />
-                {/* subtle bottom gradient for readability */}
+                {/* Subtle fade for text legibility */}
                 <LinearGradient
-                  colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.65)"]}
+                  colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.45)"]}
                   style={{
                     position: "absolute",
                     left: 0,
                     right: 0,
-                    bottom: 0,
                     top: 0,
+                    bottom: 0,
                   }}
                 />
                 {item.badge ? (
@@ -204,33 +217,20 @@ export default function PosterGeneratorScreen() {
                     </ThemedText>
                   </View>
                 ) : null}
-                <View className="absolute left-2 right-2 bottom-2 h-9 rounded-xl bg-[rgba(28,30,34,0.75)] flex-row items-center px-2.5">
-                  {item.tags && item.tags.length > 0 ? (
-                    // Inline two text labels (deduplicate in case of accidental repeats)
-                    <>
-                      <ThemedText
-                        className="text-white text-sm font-bold flex-1"
-                        numberOfLines={1}
-                      >
-                        {item.tags[0]}
-                      </ThemedText>
-                      {item.tags[1] && item.tags[1] !== item.tags[0] ? (
-                        <ThemedText
-                          className="text-white text-sm font-bold"
-                          numberOfLines={1}
-                        >
-                          {item.tags[1]}
-                        </ThemedText>
-                      ) : null}
-                    </>
-                  ) : (
-                    <ThemedText
-                      className="text-white text-sm font-bold flex-1"
-                      numberOfLines={1}
-                    >
-                      {item.title}
-                    </ThemedText>
-                  )}
+                <View
+                  className="absolute left-0 right-0 bottom-0 h-10 flex-row items-center px-3"
+                  style={{
+                    backgroundColor: tintBg(item.id),
+                    borderBottomLeftRadius: 16,
+                    borderBottomRightRadius: 16,
+                  }}
+                >
+                  <ThemedText
+                    className="text-white text-[13px] font-semibold"
+                    numberOfLines={1}
+                  >
+                    {item.title}
+                  </ThemedText>
                 </View>
               </Pressable>
             );
@@ -271,7 +271,10 @@ export default function PosterGeneratorScreen() {
           <SettingRow label="Size" value="1080 x 1920 px" />
           <SettingRow label="Category" value="Foods and beverage" />
         </View>
-        <View className="absolute left-0 right-0 bottom-0 p-4 pb-8 bg-[rgba(10,10,12,0.6)] gap-4">
+        <View
+          className="absolute left-0 right-0 bottom-0 p-4"
+          style={{ paddingBottom: insets.bottom + 12 }}
+        >
           <Pressable
             className="h-14 rounded-full bg-[#F1F2FF] justify-center items-center flex-row px-6 gap-3"
             onPress={() => {}}
