@@ -170,12 +170,6 @@ export default function PosterGeneratorScreen() {
                   transition={100}
                 />
                 <View className="absolute left-2 right-2 bottom-2 h-9 rounded-xl bg-[rgba(28,30,34,0.75)] flex-row items-center px-2.5">
-                  {/* Guard BlurView so if native module fails we still render text */}
-                  {/* <BlurView
-                    intensity={28}
-                    tint="dark"
-                    style={StyleSheet.absoluteFillObject}
-                  /> */}
                   <ThemedText
                     className="text-white text-sm font-bold flex-1"
                     numberOfLines={1}
