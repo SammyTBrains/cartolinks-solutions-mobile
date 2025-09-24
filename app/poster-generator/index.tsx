@@ -5,7 +5,7 @@ import { Colors } from "@/constants/theme";
 import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 import { useState } from "react";
 import {
   FlatList,
@@ -47,6 +47,7 @@ const CATEGORIES = [
 ];
 
 export default function PosterGeneratorScreen() {
+  const router = useRouter();
   const [tab, setTab] = useState<"smart" | "advanced">("smart");
   const [selected, setSelected] = useState("display");
   const [prompt, setPrompt] = useState(
@@ -74,7 +75,11 @@ export default function PosterGeneratorScreen() {
       <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
         {/* Header: X on top, tabs below */}
         <View style={styles.header}>
-          <Pressable accessibilityRole="button" style={styles.closeBtn}>
+          <Pressable
+            accessibilityRole="button"
+            style={styles.closeBtn}
+            onPress={() => router.back()}
+          >
             <IconSymbol name="xmark" color="#fff" size={24} />
           </Pressable>
 
@@ -198,39 +203,32 @@ export default function PosterGeneratorScreen() {
                 onChangeText={setPrompt}
                 placeholder="Describe your poster"
                 placeholderTextColor={"#9BA1A6"}
-                style={{
-                  color: Colors.dark.text,
-                  padding: 12,
-                  fontSize: 18,
-                  lineHeight: 26,
-                  flex: 1,
-                }}
+                style={styles.textInput}
               />
-              <Pressable style={styles.mediaButton} onPress={() => {}}>
-                <IconSymbol name="photo" color="#9BA1A6" size={22} />
+              <Pressable style={styles.fabMedia} onPress={() => {}}>
+                <IconSymbol name="photo" color="#fff" size={18} />
               </Pressable>
             </View>
           </View>
 
           {/* Settings */}
           <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
+            <ThemedText style={styles.sectionHeading}>Settings</ThemedText>
             <SettingRow label="Size" value="1080 x 1920 px" />
             <SettingRow label="Category" value="Foods and beverage" />
           </View>
-        </ScrollView>
-
-        {/* Generate button with bottom safe-area inset */}
-        <SafeAreaView
-          edges={["bottom"]}
-          style={styles.footerSa}
-          pointerEvents="box-none"
-        >
           <View style={styles.footer}>
             <Pressable style={styles.generateBtn} onPress={() => {}}>
+              <LinearGradient
+                colors={["#27D1E7", "#7C4DFF"]}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.generateOrb}
+              />
               <ThemedText style={styles.generateText}>Generate</ThemedText>
             </Pressable>
           </View>
-        </SafeAreaView>
+        </ScrollView>
       </SafeAreaView>
     </ThemedView>
   );
@@ -285,35 +283,10 @@ const styles = StyleSheet.create({
     color: "#6F7782",
     fontWeight: "600",
   },
-  tabsUnderlineContainer: {
-    height: 0,
-  },
+  // Removed unused segmented control styles & underline container
   tabsDivider: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: "#1E2126",
-  },
-  segmented: {
-    flexDirection: "row",
-    backgroundColor: "#101114",
-    borderRadius: 14,
-    padding: 4,
-    alignSelf: "center",
-    gap: 6,
-  },
-  segment: {
-    paddingVertical: 10,
-    paddingHorizontal: 14,
-    borderRadius: 12,
-  },
-  segmentActive: {
-    backgroundColor: "#2D2F36",
-  },
-  segmentText: {
-    color: "#9BA1A6",
-    fontWeight: "600",
-  },
-  segmentTextActive: {
-    color: "#fff",
   },
   card: {
     width: 140,
@@ -355,14 +328,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#2B2E35",
     overflow: "hidden",
-    flexDirection: "row",
+    paddingBottom: 12,
   },
-  mediaButton: {
-    width: 44,
+  textInput: {
+    color: Colors.dark.text,
+    padding: 12,
+    fontSize: 18,
+    lineHeight: 26,
+    flex: 1,
+  },
+  fabMedia: {
+    position: "absolute",
+    right: 12,
+    bottom: 12,
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: "#2D2F36",
     justifyContent: "center",
     alignItems: "center",
-    borderLeftWidth: 1,
-    borderLeftColor: "#2B2E35",
+    borderWidth: 1,
+    borderColor: "#34373E",
   },
   settingRow: {
     height: 64,
@@ -384,6 +370,12 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "600",
   },
+  sectionHeading: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#9BA1A6",
+    marginBottom: 4,
+  },
   footer: {
     position: "absolute",
     left: 0,
@@ -391,6 +383,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     padding: 16,
     backgroundColor: "rgba(10,10,12,0.6)",
+    gap: 16,
   },
   generateBtn: {
     height: 56,
@@ -398,11 +391,47 @@ const styles = StyleSheet.create({
     backgroundColor: "#F1F2FF",
     justifyContent: "center",
     alignItems: "center",
+    flexDirection: "row",
+    paddingHorizontal: 24,
+    gap: 12,
   },
   generateText: {
     color: "#1C1E22",
     fontWeight: "700",
     fontSize: 18,
+  },
+  generateOrb: {
+    width: 28,
+    height: 28,
+    borderRadius: 16,
+  },
+  progressTrack: {
+    height: 6,
+    borderRadius: 4,
+    backgroundColor: "#22252A",
+    overflow: "hidden",
+  },
+  progressFill: {
+    height: "100%",
+    backgroundColor: "#7C4DFF",
+  },
+  brandingRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingTop: 4,
+  },
+  brandingPrimary: {
+    fontSize: 14,
+    fontWeight: "700",
+    color: "#FFFFFF",
+  },
+  brandingSecondary: {
+    fontSize: 13,
+    color: "#9BA1A6",
+  },
+  brandingAccent: {
+    color: "#FFFFFF",
+    fontWeight: "600",
   },
   footerSa: {
     position: "absolute",
