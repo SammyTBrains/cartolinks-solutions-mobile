@@ -292,8 +292,8 @@ export default function PosterGeneratorScreen() {
           <View
             style={{
               position: "relative",
-              width: 30,
-              height: 30,
+              width: 32,
+              height: 32,
               alignItems: "center",
               justifyContent: "center",
             }}
@@ -305,10 +305,13 @@ export default function PosterGeneratorScreen() {
               end={{ x: 0.9, y: 1 }}
               style={{
                 position: "absolute",
-                width: 30,
-                height: 30,
-                borderRadius: 15,
-                filter: "blur(8px)" as any,
+                // Slightly larger so the shifted glow still fully shows
+                width: 34,
+                height: 34,
+                borderRadius: 17,
+                // Shift glow a bit to the bottom-right
+                transform: [{ translateX: 4 }, { translateY: 4 }],
+                filter: "blur(8px)" as any, // retained since you confirmed blur works on your target
                 opacity: 1,
               }}
             />
