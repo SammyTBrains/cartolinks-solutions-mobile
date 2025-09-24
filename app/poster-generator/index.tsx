@@ -23,7 +23,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 const ALinearGradient = Animated.createAnimatedComponent(LinearGradient);
 
-type Category = { id: string; title: string; image: any; badge?: string };
+type Category = { id: string; title: string; image: any };
 
 const CATEGORIES: Category[] = [
   {
@@ -40,7 +40,6 @@ const CATEGORIES: Category[] = [
     id: "branding",
     title: "Branding",
     image: require("../../assets/images/thumbnails/branding.jpeg"),
-    badge: "Editor's Choice",
   },
   {
     id: "announcement",
@@ -82,20 +81,15 @@ export default function PosterGeneratorScreen() {
     announcement: "#0C7FAF",
     party: "#5D3F2D",
   };
+  // Return the raw hex for a solid background (design uses solid colors)
   const tintBg = (id: string) => {
-    const hex = CARD_TINTS[id] || "#1C1E22";
-    const clean = hex.replace("#", "");
-    const num = parseInt(clean, 16);
-    const r = (num >> 16) & 255;
-    const g = (num >> 8) & 255;
-    const b = num & 255;
-    return `rgba(${r},${g},${b},0.88)`;
+    return CARD_TINTS[id] || "#1C1E22";
   };
 
   // Design tuning constants
-  const TAB_INACTIVE_COLOR = "#5A6169"; // closer to design's gray
-  const UNDERLINE_HEIGHT = 2;
-  const UNDERLINE_BOTTOM_OFFSET = -7; // sit a touch lower relative to text baseline
+  const TAB_INACTIVE_COLOR = "#9ba1a6e1"; // closer to design's gray
+  const UNDERLINE_HEIGHT = 4;
+  const UNDERLINE_BOTTOM_OFFSET = -14; // sit a touch lower relative to text baseline
   const UNDERLINE_SIDE_EXPAND = 4; // how much to grow beyond measured text width when active
   const UNDERLINE_SMART_MAX_SHRINK = 14; // gap before advanced text starts
 
@@ -152,7 +146,7 @@ export default function PosterGeneratorScreen() {
                 }
               >
                 <ThemedText
-                  className={`text-base font-semibold mr-14 ${tab === "smart" ? "text-white" : `text-[${TAB_INACTIVE_COLOR}]`}`}
+                  className={`text-base px-9 mr-2 ${tab === "smart" ? "text-white font-semibold" : `text-[${TAB_INACTIVE_COLOR}]`}`}
                 >
                   Smart script
                 </ThemedText>
@@ -164,7 +158,7 @@ export default function PosterGeneratorScreen() {
                 }
               >
                 <ThemedText
-                  className={`text-base font-semibold ${tab === "advanced" ? "text-white" : `text-[${TAB_INACTIVE_COLOR}]`}`}
+                  className={`text-base px-9 ${tab === "advanced" ? "text-white font-semibold" : `text-[${TAB_INACTIVE_COLOR}]`}`}
                 >
                   Advanced script
                 </ThemedText>
@@ -180,7 +174,6 @@ export default function PosterGeneratorScreen() {
                     position: "absolute",
                     bottom: UNDERLINE_BOTTOM_OFFSET,
                     height: UNDERLINE_HEIGHT,
-                    borderRadius: UNDERLINE_HEIGHT,
                   },
                   underlineStyle,
                 ]}
@@ -189,15 +182,15 @@ export default function PosterGeneratorScreen() {
           </View>
         </View>
       </View>
-      <View className="h-px bg-[#1E2126]" />
+      <View className="h-px bg-[#1E2126] mt-[14px]" />
       <ScrollView
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="px-5 pt-4">
+        <View className="px-5 my-1 pt-4">
           <ThemedText
-            type="title"
-            className="text-white text-[18px] leading-6 font-semibold mb-4"
+            style={{ fontSize: 19 }}
+            className="text-white text-left font-semibold mb-4"
           >
             What type of posters do you want to create?
           </ThemedText>
@@ -213,7 +206,7 @@ export default function PosterGeneratorScreen() {
             return (
               <Pressable
                 onPress={() => setSelected(item.id)}
-                className={`w-[140px] h-40 bg-[#2D2F36] rounded-2xl overflow-hidden ${isActive ? "border-2 border-white" : "border border-[#2F3339]"}`}
+                className={`w-[105px] h-[144px] bg-[#2D2F36] rounded-2xl overflow-hidden ${isActive ? "border-2 border-white" : "border border-[#2F3339]"}`}
               >
                 <Image
                   source={item.image}
@@ -234,19 +227,12 @@ export default function PosterGeneratorScreen() {
                     bottom: 0,
                   }}
                 />
-                {item.badge ? (
-                  <View className="absolute top-2 left-2 bg-[#1C1E22CC] px-2 py-1 rounded-lg border border-[#2F3238]">
-                    <ThemedText className="text-[10px] font-semibold text-white">
-                      {item.badge}
-                    </ThemedText>
-                  </View>
-                ) : null}
                 <View
                   className="absolute left-0 right-0 bottom-0 h-10 flex-row items-center px-3"
                   style={{
                     backgroundColor: tintBg(item.id),
-                    borderBottomLeftRadius: 16,
-                    borderBottomRightRadius: 16,
+                    borderBottomLeftRadius: 8,
+                    borderBottomRightRadius: 8,
                   }}
                 >
                   <ThemedText
