@@ -5,7 +5,7 @@ import { Colors } from "@/constants/theme";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FlatList,
   LayoutChangeEvent,
@@ -14,14 +14,16 @@ import {
   TextInput,
   View,
 } from "react-native";
+import Animated, {
+  useAnimatedStyle,
+  useSharedValue,
+  withTiming,
+} from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-type Category = {
-  id: string;
-  title: string;
-  image: any;
-  badge?: string;
-};
+const ALinearGradient = Animated.createAnimatedComponent(LinearGradient);
+
+type Category = { id: string; title: string; image: any; badge?: string };
 
 const CATEGORIES: Category[] = [
   {
@@ -63,7 +65,6 @@ export default function PosterGeneratorScreen() {
       "toppings in an enticing setting."
   );
 
-  // track tab positions for underline
   const [smartLayout, setSmartLayout] = useState<{ x: number; width: number }>({
     x: 0,
     width: 0,
@@ -72,11 +73,8 @@ export default function PosterGeneratorScreen() {
     x: number;
     width: number;
   }>({ x: 0, width: 0 });
-
-  const active = tab === "smart" ? smartLayout : advancedLayout;
   const insets = useSafeAreaInsets();
 
-  // Approx tint colors for bottom labels (could be replaced by real image color extraction later)
   const CARD_TINTS: Record<string, string> = {
     display: "#5F4937",
     promotion: "#6A6A6A",
@@ -84,22 +82,59 @@ export default function PosterGeneratorScreen() {
     announcement: "#0C7FAF",
     party: "#5D3F2D",
   };
-
-  function tintBg(id: string) {
+  const tintBg = (id: string) => {
     const hex = CARD_TINTS[id] || "#1C1E22";
     const clean = hex.replace("#", "");
     const num = parseInt(clean, 16);
     const r = (num >> 16) & 255;
     const g = (num >> 8) & 255;
     const b = num & 255;
-    return `rgba(${r},${g},${b},0.88)`; // unified alpha
-  }
+    return `rgba(${r},${g},${b},0.88)`;
+  };
+
+  // Design tuning constants
+  const TAB_INACTIVE_COLOR = "#5A6169"; // closer to design's gray
+  const UNDERLINE_HEIGHT = 2;
+  const UNDERLINE_BOTTOM_OFFSET = -7; // sit a touch lower relative to text baseline
+  const UNDERLINE_SIDE_EXPAND = 4; // how much to grow beyond measured text width when active
+  const UNDERLINE_SMART_MAX_SHRINK = 14; // gap before advanced text starts
+
+  // Animated underline
+  const underlineLeft = useSharedValue(0);
+  const underlineWidth = useSharedValue(0);
+  useEffect(() => {
+    if (!smartLayout.width) return;
+    if (tab === "smart") {
+      const gapToAdvanced = advancedLayout.x
+        ? advancedLayout.x - UNDERLINE_SMART_MAX_SHRINK
+        : smartLayout.width + UNDERLINE_SIDE_EXPAND * 2;
+      underlineLeft.value = withTiming(0, { duration: 240 });
+      underlineWidth.value = withTiming(
+        Math.min(smartLayout.width + UNDERLINE_SIDE_EXPAND * 2, gapToAdvanced),
+        { duration: 240 }
+      );
+    } else {
+      underlineLeft.value = withTiming(
+        advancedLayout.x - UNDERLINE_SIDE_EXPAND,
+        { duration: 240 }
+      );
+      underlineWidth.value = withTiming(
+        advancedLayout.width + UNDERLINE_SIDE_EXPAND * 2,
+        {
+          duration: 240,
+        }
+      );
+    }
+  }, [tab, smartLayout, advancedLayout, underlineLeft, underlineWidth]);
+  const underlineStyle = useAnimatedStyle(() => ({
+    left: underlineLeft.value,
+    width: underlineWidth.value,
+  }));
 
   return (
     <ThemedView className="flex-1">
       <Stack.Screen options={{ headerShown: false }} />
-      {/* Header + tabs */}
-      <View className="px-4" style={{ paddingTop: insets.top + 6 }}>
+      <View className="px-4" style={{ paddingTop: insets.top + 10 }}>
         <Pressable
           accessibilityRole="button"
           className="w-11 h-11 justify-center items-start"
@@ -107,10 +142,9 @@ export default function PosterGeneratorScreen() {
         >
           <IconSymbol name="xmark" color="#fff" size={24} />
         </Pressable>
-
-        <View className="mt-1 gap-3">
+        <View className="mt-1 gap-2">
           <View className="relative">
-            <View className="flex-row gap-9 items-center">
+            <View className="flex-row items-center">
               <Pressable
                 onPress={() => setTab("smart")}
                 onLayout={(e: LayoutChangeEvent) =>
@@ -118,9 +152,7 @@ export default function PosterGeneratorScreen() {
                 }
               >
                 <ThemedText
-                  className={`text-lg font-bold ${
-                    tab === "smart" ? "text-white" : "text-[#9BA1A6]"
-                  }`}
+                  className={`text-base font-semibold mr-14 ${tab === "smart" ? "text-white" : `text-[${TAB_INACTIVE_COLOR}]`}`}
                 >
                   Smart script
                 </ThemedText>
@@ -132,35 +164,32 @@ export default function PosterGeneratorScreen() {
                 }
               >
                 <ThemedText
-                  className={`text-lg font-semibold ${
-                    tab === "advanced" ? "text-white" : "text-[#6F7782]"
-                  }`}
+                  className={`text-base font-semibold ${tab === "advanced" ? "text-white" : `text-[${TAB_INACTIVE_COLOR}]`}`}
                 >
                   Advanced script
                 </ThemedText>
               </Pressable>
             </View>
-            {active.width > 0 && (
-              <LinearGradient
+            {smartLayout.width > 0 && (
+              <ALinearGradient
                 colors={["#27D1E7", "#7C4DFF"]}
                 start={{ x: 0, y: 0.5 }}
                 end={{ x: 1, y: 0.5 }}
-                style={{
-                  position: "absolute",
-                  left: tab === "smart" ? 0 : active.x - 4,
-                  bottom: -8,
-                  width:
-                    (tab === "smart" ? smartLayout.width : active.width) + 8,
-                  height: 3,
-                  borderRadius: 3,
-                }}
+                style={[
+                  {
+                    position: "absolute",
+                    bottom: UNDERLINE_BOTTOM_OFFSET,
+                    height: UNDERLINE_HEIGHT,
+                    borderRadius: UNDERLINE_HEIGHT,
+                  },
+                  underlineStyle,
+                ]}
               />
             )}
           </View>
         </View>
       </View>
       <View className="h-px bg-[#1E2126]" />
-
       <ScrollView
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
@@ -173,8 +202,6 @@ export default function PosterGeneratorScreen() {
             What type of posters do you want to create?
           </ThemedText>
         </View>
-
-        {/* Categories carousel */}
         <FlatList
           horizontal
           data={CATEGORIES}
@@ -186,9 +213,7 @@ export default function PosterGeneratorScreen() {
             return (
               <Pressable
                 onPress={() => setSelected(item.id)}
-                className={`w-[140px] h-40 bg-[#2D2F36] rounded-2xl overflow-hidden ${
-                  isActive ? "border-2 border-white" : "border border-[#2F3339]"
-                }`}
+                className={`w-[140px] h-40 bg-[#2D2F36] rounded-2xl overflow-hidden ${isActive ? "border-2 border-white" : "border border-[#2F3339]"}`}
               >
                 <Image
                   source={item.image}
@@ -199,7 +224,6 @@ export default function PosterGeneratorScreen() {
                   }
                   transition={100}
                 />
-                {/* Subtle fade for text legibility */}
                 <LinearGradient
                   colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.45)"]}
                   style={{
@@ -236,8 +260,6 @@ export default function PosterGeneratorScreen() {
             );
           }}
         />
-
-        {/* Prompt text area */}
         <View className="px-5 pt-5">
           <View className="min-h-[180px] bg-[#1C1E22] rounded-2xl border border-[#2B2E35] overflow-hidden pb-3">
             <TextInput
@@ -262,8 +284,6 @@ export default function PosterGeneratorScreen() {
             </Pressable>
           </View>
         </View>
-
-        {/* Settings */}
         <View className="px-5 pt-4">
           <ThemedText className="text-[15px] font-semibold text-[#9BA1A6] mb-1">
             Settings
@@ -309,3 +329,4 @@ function SettingRow({ label, value }: { label: string; value: string }) {
     </View>
   );
 }
+// End of file
