@@ -16,7 +16,6 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
 const CATEGORIES = [
   {
@@ -70,373 +69,188 @@ export default function PosterGeneratorScreen() {
   const active = tab === "smart" ? smartLayout : advancedLayout;
 
   return (
-    <ThemedView style={{ flex: 1 }}>
+    <ThemedView className="flex-1">
       <Stack.Screen options={{ headerShown: false }} />
-      <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-        {/* Header: X on top, tabs below */}
-        <View style={styles.header}>
-          <Pressable
-            accessibilityRole="button"
-            style={styles.closeBtn}
-            onPress={() => router.back()}
-          >
-            <IconSymbol name="xmark" color="#fff" size={24} />
-          </Pressable>
-
-          <View style={styles.tabsContainer}>
-            <View style={styles.tabsBlock}>
-              <View style={styles.tabsRow}>
-                <Pressable
-                  onPress={() => setTab("smart")}
-                  onLayout={(e: LayoutChangeEvent) =>
-                    setSmartLayout(e.nativeEvent.layout)
-                  }
-                >
-                  <ThemedText
-                    style={[
-                      styles.tabText,
-                      tab === "smart" && styles.tabTextActive,
-                    ]}
-                  >
-                    Smart script
-                  </ThemedText>
-                </Pressable>
-                <Pressable
-                  onPress={() => setTab("advanced")}
-                  onLayout={(e: LayoutChangeEvent) =>
-                    setAdvancedLayout(e.nativeEvent.layout)
-                  }
-                >
-                  <ThemedText
-                    style={[
-                      styles.tabText,
-                      tab === "advanced"
-                        ? styles.tabTextActive
-                        : styles.tabTextInactive,
-                    ]}
-                  >
-                    Advanced script
-                  </ThemedText>
-                </Pressable>
-              </View>
-              {/* Wider gradient underline */}
-              <LinearGradient
-                colors={["#27D1E7", "#7C4DFF"]}
-                start={{ x: 0, y: 0.5 }}
-                end={{ x: 1, y: 0.5 }}
-                style={{
-                  position: "absolute",
-                  left: Math.max(active.x - 10, 0),
-                  bottom: -8,
-                  width: Math.max(
-                    Math.min(active.width * 1.8, 260),
-                    active.width + 60
-                  ),
-                  height: 3,
-                  borderRadius: 3,
-                }}
-              />
-            </View>
-          </View>
-        </View>
-        <View style={styles.tabsDivider} />
-
-        <ScrollView
-          contentContainerStyle={{ paddingBottom: 120 }}
-          showsVerticalScrollIndicator={false}
+      {/* Header: X on top, tabs below */}
+      <View className="px-4 pt-1.5">
+        <Pressable
+          accessibilityRole="button"
+          className="w-11 h-11 justify-center items-start"
+          onPress={() => router.back()}
         >
-          <View style={{ paddingHorizontal: 16, paddingTop: 12 }}>
-            <ThemedText
-              type="title"
-              style={{ fontSize: 24, lineHeight: 32, marginBottom: 12 }}
-            >
-              What type of posters do you want to create?
-            </ThemedText>
-          </View>
+          <IconSymbol name="xmark" color="#fff" size={24} />
+        </Pressable>
 
-          {/* Categories carousel */}
-          <FlatList
-            horizontal
-            data={CATEGORIES}
-            keyExtractor={(i) => i.id}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 16, gap: 14 }}
-            renderItem={({ item }) => {
-              const isActive = item.id === selected;
-              return (
-                <Pressable
-                  onPress={() => setSelected(item.id)}
-                  style={[styles.card, isActive && styles.cardActive]}
+        <View className="mt-1 items-center gap-3">
+          <View className="relative items-center">
+            <View className="flex-row gap-6 items-center">
+              <Pressable
+                onPress={() => setTab("smart")}
+                onLayout={(e: LayoutChangeEvent) =>
+                  setSmartLayout(e.nativeEvent.layout)
+                }
+              >
+                <ThemedText
+                  className={`text-lg font-bold ${
+                    tab === "smart" ? "text-white" : "text-[#9BA1A6]"
+                  }`}
                 >
-                  <Image
-                    source={item.image}
-                    style={styles.cardImage}
-                    contentFit="cover"
-                    transition={100}
-                  />
-                  <View style={styles.cardOverlay}>
-                    {/* Guard BlurView so if native module fails we still render text */}
-                    <BlurView
-                      intensity={28}
-                      tint="dark"
-                      // experimentalBlurMethod removed to avoid potential native crash / blank screen
-                      style={StyleSheet.absoluteFill}
-                    />
-                    <ThemedText
-                      style={styles.cardOverlayText}
-                      numberOfLines={1}
-                    >
-                      {item.title}
-                    </ThemedText>
-                  </View>
-                </Pressable>
-              );
-            }}
-          />
-
-          {/* Prompt text area */}
-          <View style={{ paddingHorizontal: 16, paddingTop: 16 }}>
-            <View style={styles.textArea}>
-              <TextInput
-                multiline
-                value={prompt}
-                onChangeText={setPrompt}
-                placeholder="Describe your poster"
-                placeholderTextColor={"#9BA1A6"}
-                style={styles.textInput}
-              />
-              <Pressable style={styles.fabMedia} onPress={() => {}}>
-                <IconSymbol name="photo" color="#fff" size={18} />
+                  Smart script
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={() => setTab("advanced")}
+                onLayout={(e: LayoutChangeEvent) =>
+                  setAdvancedLayout(e.nativeEvent.layout)
+                }
+              >
+                <ThemedText
+                  className={`text-lg font-semibold ${
+                    tab === "advanced" ? "text-white" : "text-[#6F7782]"
+                  }`}
+                >
+                  Advanced script
+                </ThemedText>
               </Pressable>
             </View>
+            {/* Wider gradient underline */}
+            <LinearGradient
+              colors={["#27D1E7", "#7C4DFF"]}
+              start={{ x: 0, y: 0.5 }}
+              end={{ x: 1, y: 0.5 }}
+              style={{
+                position: "absolute",
+                left: Math.max(active.x - 10, 0),
+                bottom: -8,
+                width: Math.max(
+                  Math.min(active.width * 1.8, 260),
+                  active.width + 60
+                ),
+                height: 3,
+                borderRadius: 3,
+              }}
+            />
           </View>
+        </View>
+      </View>
+      <View className="h-px bg-[#1E2126]" />
 
-          {/* Settings */}
-          <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
-            <ThemedText style={styles.sectionHeading}>Settings</ThemedText>
-            <SettingRow label="Size" value="1080 x 1920 px" />
-            <SettingRow label="Category" value="Foods and beverage" />
-          </View>
-          <View style={styles.footer}>
-            <Pressable style={styles.generateBtn} onPress={() => {}}>
-              <LinearGradient
-                colors={["#27D1E7", "#7C4DFF"]}
-                start={{ x: 0, y: 0 }}
-                end={{ x: 1, y: 1 }}
-                style={styles.generateOrb}
-              />
-              <ThemedText style={styles.generateText}>Generate</ThemedText>
+      <ScrollView
+        contentContainerStyle={{ paddingBottom: 120 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <View className="px-4 pt-3">
+          <ThemedText type="title" className="text-2xl leading-8 mb-3">
+            What type of posters do you want to create?
+          </ThemedText>
+        </View>
+
+        {/* Categories carousel */}
+        <FlatList
+          horizontal
+          data={CATEGORIES}
+          keyExtractor={(i) => i.id}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{ paddingHorizontal: 16, gap: 14 }}
+          renderItem={({ item }) => {
+            const isActive = item.id === selected;
+            return (
+              <Pressable
+                onPress={() => setSelected(item.id)}
+                className={`w-[140px] h-40 bg-[#2D2F36] rounded-2xl overflow-hidden ${
+                  isActive ? "border-2 border-white" : ""
+                }`}
+              >
+                <Image
+                  source={item.image}
+                  className="w-full h-full"
+                  contentFit="cover"
+                  transition={100}
+                />
+                <View className="absolute left-2 right-2 bottom-2 h-9 rounded-xl bg-[rgba(28,30,34,0.75)] flex-row items-center px-2.5">
+                  {/* Guard BlurView so if native module fails we still render text */}
+                  <BlurView
+                    intensity={28}
+                    tint="dark"
+                    style={StyleSheet.absoluteFillObject}
+                  />
+                  <ThemedText
+                    className="text-white text-sm font-bold flex-1"
+                    numberOfLines={1}
+                  >
+                    {item.title}
+                  </ThemedText>
+                </View>
+              </Pressable>
+            );
+          }}
+        />
+
+        {/* Prompt text area */}
+        <View className="px-4 pt-4">
+          <View className="min-h-[180px] bg-[#1C1E22] rounded-2xl border border-[#2B2E35] overflow-hidden pb-3">
+            <TextInput
+              multiline
+              value={prompt}
+              onChangeText={setPrompt}
+              placeholder="Describe your poster"
+              placeholderTextColor={"#9BA1A6"}
+              style={{
+                color: Colors.dark.text,
+                padding: 12,
+                fontSize: 18,
+                lineHeight: 26,
+                flex: 1,
+              }}
+            />
+            <Pressable
+              className="absolute right-3 bottom-3 w-10 h-10 rounded-xl bg-[#2D2F36] justify-center items-center border border-[#34373E]"
+              onPress={() => {}}
+            >
+              <IconSymbol name="photo" color="#fff" size={18} />
             </Pressable>
           </View>
-        </ScrollView>
-      </SafeAreaView>
+        </View>
+
+        {/* Settings */}
+        <View className="px-4 pt-2">
+          <ThemedText className="text-[15px] font-semibold text-[#9BA1A6] mb-1">
+            Settings
+          </ThemedText>
+          <SettingRow label="Size" value="1080 x 1920 px" />
+          <SettingRow label="Category" value="Foods and beverage" />
+        </View>
+        <View className="absolute left-0 right-0 bottom-0 p-4 bg-[rgba(10,10,12,0.6)] gap-4">
+          <Pressable
+            className="h-14 rounded-full bg-[#F1F2FF] justify-center items-center flex-row px-6 gap-3"
+            onPress={() => {}}
+          >
+            <LinearGradient
+              colors={["#27D1E7", "#7C4DFF"]}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              className="w-7 h-7 rounded-2xl"
+            />
+            <ThemedText className="text-[#1C1E22] font-bold text-lg">
+              Generate
+            </ThemedText>
+          </Pressable>
+        </View>
+      </ScrollView>
     </ThemedView>
   );
 }
 
 function SettingRow({ label, value }: { label: string; value: string }) {
   return (
-    <View style={styles.settingRow}>
-      <ThemedText style={styles.settingLabel}>{label}</ThemedText>
+    <View className="h-16 bg-[#1C1E22] rounded-2xl border border-[#2B2E35] px-4 flex-row items-center mb-3">
+      <ThemedText className="text-[#9BA1A6] text-base">{label}</ThemedText>
       <View style={{ flex: 1 }} />
-      <ThemedText style={styles.settingValue}>{value}</ThemedText>
+      <ThemedText className="text-white text-base font-semibold">
+        {value}
+      </ThemedText>
       <View style={{ width: 8 }} />
       <IconSymbol name="chevron.right" color="#9BA1A6" size={20} />
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  header: {
-    paddingHorizontal: 16,
-    paddingTop: 6,
-  },
-  closeBtn: {
-    width: 44,
-    height: 44,
-    justifyContent: "center",
-    alignItems: "flex-start",
-  },
-  tabsContainer: {
-    marginTop: 4,
-    alignItems: "center",
-    gap: 12,
-  },
-  tabsBlock: {
-    position: "relative",
-    alignItems: "center",
-  },
-  tabsRow: {
-    flexDirection: "row",
-    gap: 24,
-    alignItems: "center",
-  },
-  tabText: {
-    fontSize: 18,
-    fontWeight: "700",
-    color: "#9BA1A6",
-  },
-  tabTextActive: {
-    color: "#FFFFFF",
-  },
-  tabTextInactive: {
-    color: "#6F7782",
-    fontWeight: "600",
-  },
-  // Removed unused segmented control styles & underline container
-  tabsDivider: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: "#1E2126",
-  },
-  card: {
-    width: 140,
-    height: 160,
-    backgroundColor: "#2D2F36",
-    borderRadius: 18,
-    overflow: "hidden",
-  },
-  cardActive: {
-    borderWidth: 2,
-    borderColor: "#FFFFFF",
-  },
-  cardImage: {
-    width: "100%",
-    height: "100%",
-  },
-  cardOverlay: {
-    position: "absolute",
-    left: 8,
-    right: 8,
-    bottom: 8,
-    height: 36,
-    borderRadius: 12,
-    backgroundColor: "rgba(28,30,34,0.75)",
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 10,
-  },
-  cardOverlayText: {
-    color: "#FFFFFF",
-    fontSize: 14,
-    fontWeight: "700",
-    flex: 1,
-  },
-  textArea: {
-    minHeight: 180,
-    backgroundColor: "#1C1E22",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#2B2E35",
-    overflow: "hidden",
-    paddingBottom: 12,
-  },
-  textInput: {
-    color: Colors.dark.text,
-    padding: 12,
-    fontSize: 18,
-    lineHeight: 26,
-    flex: 1,
-  },
-  fabMedia: {
-    position: "absolute",
-    right: 12,
-    bottom: 12,
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: "#2D2F36",
-    justifyContent: "center",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#34373E",
-  },
-  settingRow: {
-    height: 64,
-    backgroundColor: "#1C1E22",
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: "#2B2E35",
-    paddingHorizontal: 16,
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 12,
-  },
-  settingLabel: {
-    color: "#9BA1A6",
-    fontSize: 16,
-  },
-  settingValue: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  sectionHeading: {
-    fontSize: 15,
-    fontWeight: "600",
-    color: "#9BA1A6",
-    marginBottom: 4,
-  },
-  footer: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-    padding: 16,
-    backgroundColor: "rgba(10,10,12,0.6)",
-    gap: 16,
-  },
-  generateBtn: {
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: "#F1F2FF",
-    justifyContent: "center",
-    alignItems: "center",
-    flexDirection: "row",
-    paddingHorizontal: 24,
-    gap: 12,
-  },
-  generateText: {
-    color: "#1C1E22",
-    fontWeight: "700",
-    fontSize: 18,
-  },
-  generateOrb: {
-    width: 28,
-    height: 28,
-    borderRadius: 16,
-  },
-  progressTrack: {
-    height: 6,
-    borderRadius: 4,
-    backgroundColor: "#22252A",
-    overflow: "hidden",
-  },
-  progressFill: {
-    height: "100%",
-    backgroundColor: "#7C4DFF",
-  },
-  brandingRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingTop: 4,
-  },
-  brandingPrimary: {
-    fontSize: 14,
-    fontWeight: "700",
-    color: "#FFFFFF",
-  },
-  brandingSecondary: {
-    fontSize: 13,
-    color: "#9BA1A6",
-  },
-  brandingAccent: {
-    color: "#FFFFFF",
-    fontWeight: "600",
-  },
-  footerSa: {
-    position: "absolute",
-    left: 0,
-    right: 0,
-    bottom: 0,
-  },
-});
