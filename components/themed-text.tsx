@@ -1,29 +1,24 @@
-import { useThemeColor } from "@/hooks/use-theme-color";
+import { Colors } from "@/constants/theme";
 import { StyleSheet, Text, type TextProps } from "react-native";
 
 export type ThemedTextProps = TextProps & {
-  lightColor?: string;
-  darkColor?: string;
   type?: "default" | "title" | "defaultSemiBold" | "subtitle" | "link";
   className?: string;
 };
 
 export function ThemedText({
   style,
-  lightColor,
-  darkColor,
   type = "default",
   className,
   ...rest
 }: ThemedTextProps) {
-  const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
-  // If a Tailwind text-* class is provided, don't force theme color to allow overrides.
+  const darkColor = Colors.dark.text;
   const hasExplicitColorClass = className?.match(/(^|\s)text-[^\s]+/);
   return (
     <Text
       className={className}
       style={[
-        !hasExplicitColorClass && { color },
+        !hasExplicitColorClass && { color: darkColor },
         type === "default" && styles.default,
         type === "title" && styles.title,
         type === "defaultSemiBold" && styles.defaultSemiBold,

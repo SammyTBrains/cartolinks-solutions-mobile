@@ -6,7 +6,8 @@ export function useThemeColor(
   props: { light?: string; dark?: string },
   colorName: keyof typeof Colors.light & keyof typeof Colors.dark
 ) {
-  const theme = useColorScheme() ?? "light";
-  const colorFromProps = props[theme];
-  return colorFromProps ?? Colors[theme][colorName];
+  // Always dark mode enforced; ensure hook still invoked in case future side-effects
+  useColorScheme();
+  const colorFromProps = props.dark;
+  return colorFromProps ?? Colors.dark[colorName];
 }

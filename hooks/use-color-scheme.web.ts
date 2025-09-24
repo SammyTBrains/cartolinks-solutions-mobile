@@ -1,12 +1,4 @@
-import { useEffect, useState } from "react";
-import { useColorScheme as useRNColorScheme } from "react-native";
-
-// Web-specific color scheme hook supporting static prerender hydration.
+// Force dark mode on web build targets as well
 export function useColorScheme() {
-  const [hasHydrated, setHasHydrated] = useState(false);
-  useEffect(() => {
-    setHasHydrated(true);
-  }, []);
-  const colorScheme = useRNColorScheme();
-  return hasHydrated ? colorScheme : "light";
+  return "dark" as const;
 }
