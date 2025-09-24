@@ -55,6 +55,19 @@ const CATEGORIES: Category[] = [
   },
 ];
 
+const CARD_TINTS: Record<string, string> = {
+  display: "#5F4937",
+  promotion: "#9c2e6be9",
+  branding: "#1e6b9bff",
+  announcement: "#b6741dff",
+  party: "#844e2cff",
+};
+
+const UNDERLINE_HEIGHT = 4;
+const UNDERLINE_BOTTOM_OFFSET = -14;
+const UNDERLINE_SIDE_EXPAND = 4;
+const UNDERLINE_SMART_MAX_SHRINK = 14;
+
 export default function PosterGeneratorScreen() {
   const router = useRouter();
   const [tab, setTab] = useState<"smart" | "advanced">("smart");
@@ -76,23 +89,7 @@ export default function PosterGeneratorScreen() {
   }>({ x: 0, width: 0 });
   const insets = useSafeAreaInsets();
 
-  const CARD_TINTS: Record<string, string> = {
-    display: "#5F4937",
-    promotion: "#9c2e6be9",
-    branding: "#1e6b9bff",
-    announcement: "#b6741dff",
-    party: "#844e2cff",
-  };
-  // Return the raw hex for a solid background (design uses solid colors)
-  const tintBg = (id: string) => {
-    return CARD_TINTS[id] || "#1C1E22";
-  };
-
-  // Design tuning constants
-  const UNDERLINE_HEIGHT = 4;
-  const UNDERLINE_BOTTOM_OFFSET = -14; // sit a touch lower relative to text baseline
-  const UNDERLINE_SIDE_EXPAND = 4; // how much to grow beyond measured text width when active
-  const UNDERLINE_SMART_MAX_SHRINK = 14; // gap before advanced text starts
+  const tintBg = (id: string) => CARD_TINTS[id] || "#1C1E22";
 
   // Animated underline
   const underlineLeft = useSharedValue(0);
@@ -229,7 +226,7 @@ export default function PosterGeneratorScreen() {
                   }}
                 />
                 <View
-                  className={`absolute ${isActive ? "left-[2px] right-[2px] bottom-[2px]" : "left-0 right-0 bottom-0"} h-10 flex-row items-center px-3`}
+                  className={`absolute ${isActive ? "left-[2px] right-[2px] bottom-[2px]" : "left-0 right-0 bottom-0"} h-10 flex-row items-center justify-center px-2`}
                   style={{
                     backgroundColor: tintBg(item.id),
                     borderBottomLeftRadius: 8,
@@ -237,7 +234,8 @@ export default function PosterGeneratorScreen() {
                   }}
                 >
                   <ThemedText
-                    className="text-white text-[13px] font-semibold"
+                    style={{ fontSize: 13, textAlign: "center" }}
+                    className="text-white"
                     numberOfLines={1}
                   >
                     {item.title}
@@ -298,37 +296,30 @@ export default function PosterGeneratorScreen() {
               justifyContent: "center",
             }}
           >
-            {/* Glow */}
             <LinearGradient
               colors={["#2CE9FF55", "#7C4DFF22"]}
               start={{ x: 0.3, y: 0.2 }}
               end={{ x: 0.9, y: 1 }}
               style={{
                 position: "absolute",
-                // Slightly larger so the shifted glow still fully shows
                 width: 30,
                 height: 30,
                 borderRadius: 15,
-                // Shift glow a bit to the bottom-right
                 transform: [{ translateX: 2 }, { translateY: 3 }],
-                filter: "blur(3px)" as any, // retained since you confirmed blur works on your target
+                filter: "blur(3px)" as any,
                 opacity: 1,
               }}
             />
-            {/* Inner spacing ring (creates the subtle gap) */}
             <View
               style={{
                 width: 21,
                 height: 21,
                 borderRadius: 10,
-                backgroundColor: "#eaeaea", // match button background so it reads as space
-                // Optional slight elevation separation; tweak if needed
+                backgroundColor: "#eaeaea",
               }}
             />
-            {/* Core gradient dot */}
             <LinearGradient
               colors={["#27D1E7", "#7C4DFF"]}
-              // Adjusted direction: bottom-left to top-right for stronger perceived lighting
               start={{ x: 0, y: 1 }}
               end={{ x: 1, y: 0 }}
               style={{
