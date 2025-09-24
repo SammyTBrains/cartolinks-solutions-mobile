@@ -285,7 +285,7 @@ export default function PosterGeneratorScreen() {
       </ScrollView>
       <View className="p-4 mt-1" style={{ paddingBottom: insets.bottom + 12 }}>
         <TouchableOpacity
-          className="h-14 rounded-xl bg-[#eaeaea] justify-center items-center flex-row px-7 gap-3"
+          className="h-14 w-[99%] self-center rounded-xl bg-[#eaeaea] justify-center items-center flex-row px-7 gap-3"
           onPress={() => {}}
           accessibilityRole="button"
         >
