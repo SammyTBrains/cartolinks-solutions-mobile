@@ -13,6 +13,7 @@ import {
   Pressable,
   ScrollView,
   TextInput,
+  TouchableOpacity,
   View,
 } from "react-native";
 import Animated, {
@@ -184,7 +185,7 @@ export default function PosterGeneratorScreen() {
       </View>
       <View className="h-px bg-[#1E2126] mt-[14px]" />
       <ScrollView
-        contentContainerStyle={{ paddingBottom: 70 }}
+        contentContainerStyle={{ paddingBottom: 55 }}
         showsVerticalScrollIndicator={false}
       >
         <View className="px-5 my-1 pt-4">
@@ -247,7 +248,7 @@ export default function PosterGeneratorScreen() {
           }}
         />
         <View className="px-5 mt-7">
-          <View className="min-h-[180px] bg-[#141517] rounded-2xl border border-[#141517] overflow-hidden pb-3">
+          <View className="min-h-[180px] bg-[#121313] rounded-lg border border-[#121313] overflow-hidden pb-3">
             <TextInput
               multiline
               value={prompt}
@@ -260,25 +261,31 @@ export default function PosterGeneratorScreen() {
                 fontSize: 16,
               }}
             />
-            <Pressable
+            <TouchableOpacity
               className="absolute right-3 bottom-3 w-10 h-10 rounded-xl bg-transparent justify-center items-center "
               onPress={() => {}}
             >
               <Foundation name="photo" size={24} color="#bdbfc1ff" />
-            </Pressable>
+            </TouchableOpacity>
           </View>
         </View>
         <View className="px-5 mt-7">
           <ThemedText className="text-[11px] text-[#666768] mb-2 ml-1">
             Settings
           </ThemedText>
-          <SettingRow label="Size" value="1080 x 1920 px" />
-          <SettingRow label="Category" value="Foods and beverage" />
+          <View className="bg-[#121313] rounded-lg overflow-hidden border border-[#121313]">
+            <SettingRow label="Size" value="1080 x 1920 px" isLast={false} />
+            <SettingRow
+              label="Category"
+              value="Foods and beverage"
+              isLast={true}
+            />
+          </View>
         </View>
       </ScrollView>
       <View className="p-4 mt-1" style={{ paddingBottom: insets.bottom + 12 }}>
         <Pressable
-          className="h-14 rounded-full bg-[#F1F2FF] justify-center items-center flex-row px-6 gap-3"
+          className="h-14 rounded-xl bg-[#eaeaea] justify-center items-center flex-row px-6 gap-3"
           onPress={() => {}}
           accessibilityRole="button"
         >
@@ -286,9 +293,12 @@ export default function PosterGeneratorScreen() {
             colors={["#27D1E7", "#7C4DFF"]}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
-            style={{ width: 30, height: 30, borderRadius: 15 }}
+            style={{ width: 16, height: 16, borderRadius: 8 }}
           />
-          <ThemedText className="text-[#1C1E22] font-bold text-lg">
+          <ThemedText
+            style={{ fontSize: 18 }}
+            className="text-[#1C1E22] font-semibold"
+          >
             Generate
           </ThemedText>
         </Pressable>
@@ -297,15 +307,29 @@ export default function PosterGeneratorScreen() {
   );
 }
 
-function SettingRow({ label, value }: { label: string; value: string }) {
+function SettingRow({
+  label,
+  value,
+  isLast,
+}: {
+  label: string;
+  value: string;
+  isLast: boolean;
+}) {
   return (
-    <View className="h-16 bg-[#141517] rounded-2xl px-5 flex-row items-center mb-3">
-      <ThemedText className="text-[#9BA1A6] text-base">{label}</ThemedText>
-      <View style={{ flex: 1 }} />
-      <ThemedText className="text-[#666768] text-base">{value}</ThemedText>
-      <View style={{ width: 8 }} />
-      <IconSymbol name="chevron.right" color="#9BA1A6" size={20} />
+    <View>
+      <View className="h-14 px-5 flex-row items-center">
+        <ThemedText className="text-[#9BA1A6] font-normal text-[15px]">
+          {label}
+        </ThemedText>
+        <View style={{ flex: 1 }} />
+        <ThemedText className="text-[#666768] text-[15px]" numberOfLines={1}>
+          {value}
+        </ThemedText>
+        <View style={{ width: 6 }} />
+        <IconSymbol name="chevron.right" color="#9BA1A6" size={18} />
+      </View>
+      {!isLast && <View className="h-px bg-[#1e21266d] mx-5" />}
     </View>
   );
 }
-// End of file
