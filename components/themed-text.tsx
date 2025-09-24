@@ -17,11 +17,13 @@ export function ThemedText({
   ...rest
 }: ThemedTextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, "text");
+  // If a Tailwind text-* class is provided, don't force theme color to allow overrides.
+  const hasExplicitColorClass = className?.match(/(^|\s)text-[^\s]+/);
   return (
     <Text
       className={className}
       style={[
-        { color },
+        !hasExplicitColorClass && { color },
         type === "default" && styles.default,
         type === "title" && styles.title,
         type === "defaultSemiBold" && styles.defaultSemiBold,

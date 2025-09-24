@@ -2,7 +2,6 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
-import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
@@ -12,7 +11,6 @@ import {
   LayoutChangeEvent,
   Pressable,
   ScrollView,
-  StyleSheet,
   TextInput,
   View,
 } from "react-native";
@@ -21,27 +19,28 @@ const CATEGORIES = [
   {
     id: "display",
     title: "display",
-    image: require("@/assets/images/thumbnails/display.jpeg"),
+    // Use relative require for first item to rule out any path alias issue with assets
+    image: require("../../assets/images/thumbnails/display.jpeg"),
   },
   {
     id: "promotion",
     title: "Promotion",
-    image: require("@/assets/images/thumbnails/promotion.jpeg"),
+    image: require("../../assets/images/thumbnails/promotion.jpeg"),
   },
   {
     id: "branding",
     title: "Branding",
-    image: require("@/assets/images/thumbnails/branding.jpeg"),
+    image: require("../../assets/images/thumbnails/branding.jpeg"),
   },
   {
     id: "announcement",
     title: "Announceme...",
-    image: require("@/assets/images/thumbnails/announcement.jpeg"),
+    image: require("../../assets/images/thumbnails/announcement.jpeg"),
   },
   {
     id: "party",
     title: "Party",
-    image: require("@/assets/images/thumbnails/Party.jpeg"),
+    image: require("../../assets/images/thumbnails/Party.jpeg"),
   },
 ];
 
@@ -163,17 +162,20 @@ export default function PosterGeneratorScreen() {
               >
                 <Image
                   source={item.image}
-                  className="w-full h-full"
+                  style={{ width: "100%", height: "100%" }}
                   contentFit="cover"
+                  onError={(error) => {
+                    console.warn("Image failed to load", item.id, error);
+                  }}
                   transition={100}
                 />
                 <View className="absolute left-2 right-2 bottom-2 h-9 rounded-xl bg-[rgba(28,30,34,0.75)] flex-row items-center px-2.5">
                   {/* Guard BlurView so if native module fails we still render text */}
-                  <BlurView
+                  {/* <BlurView
                     intensity={28}
                     tint="dark"
                     style={StyleSheet.absoluteFillObject}
-                  />
+                  /> */}
                   <ThemedText
                     className="text-white text-sm font-bold flex-1"
                     numberOfLines={1}
@@ -229,7 +231,7 @@ export default function PosterGeneratorScreen() {
               colors={["#27D1E7", "#7C4DFF"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              className="w-7 h-7 rounded-2xl"
+              style={{ width: 28, height: 28, borderRadius: 14 }}
             />
             <ThemedText className="text-[#1C1E22] font-bold text-lg">
               Generate
