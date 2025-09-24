@@ -1,9 +1,10 @@
+import { CategoryCard } from "@/components/category-card";
+import { GenerateButton } from "@/components/generate-button";
 import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
 import { Foundation } from "@expo/vector-icons";
-import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -106,16 +107,17 @@ export default function PosterGeneratorScreen() {
         { duration: 240 }
       );
     } else {
-      underlineLeft.value = withTiming(
-        advancedLayout.x - UNDERLINE_SIDE_EXPAND,
-        { duration: 240 }
-      );
-      underlineWidth.value = withTiming(
-        advancedLayout.width + UNDERLINE_SIDE_EXPAND * 2,
-        {
-          duration: 240,
-        }
-      );
+      const advMeasured = advancedLayout.width > 0;
+      const advX = advMeasured
+        ? advancedLayout.x
+        : smartLayout.x + smartLayout.width + 8; // estimated position fallback
+      const advWidth = advMeasured ? advancedLayout.width : smartLayout.width;
+      underlineLeft.value = withTiming(advX - UNDERLINE_SIDE_EXPAND, {
+        duration: 240,
+      });
+      underlineWidth.value = withTiming(advWidth + UNDERLINE_SIDE_EXPAND * 2, {
+        duration: 240,
+      });
     }
   }, [tab, smartLayout, advancedLayout, underlineLeft, underlineWidth]);
   const underlineStyle = useAnimatedStyle(() => ({
@@ -199,51 +201,15 @@ export default function PosterGeneratorScreen() {
           keyExtractor={(i) => i.id}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={{ paddingHorizontal: 16, gap: 14 }}
-          renderItem={({ item }) => {
-            const isActive = item.id === selected;
-            return (
-              <Pressable
-                onPress={() => setSelected(item.id)}
-                className={`bg-[#2D2F36] rounded-2xl overflow-hidden ${isActive ? "border-[3px] p-[2px] w-[95px] h-[135px] border-white" : "border w-[90px] h-[130px] border-[#2F3339]"}`}
-              >
-                <Image
-                  source={item.image}
-                  style={{ width: "100%", height: "100%", borderRadius: 8 }}
-                  contentFit="cover"
-                  onError={(error) =>
-                    console.warn("Image failed to load", item.id, error)
-                  }
-                  transition={100}
-                />
-                <LinearGradient
-                  colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.45)"]}
-                  style={{
-                    position: "absolute",
-                    left: 0,
-                    right: 0,
-                    top: 0,
-                    bottom: 0,
-                  }}
-                />
-                <View
-                  className={`absolute ${isActive ? "left-[2px] right-[2px] bottom-[2px]" : "left-0 right-0 bottom-0"} h-10 flex-row items-center justify-center px-2`}
-                  style={{
-                    backgroundColor: tintBg(item.id),
-                    borderBottomLeftRadius: 8,
-                    borderBottomRightRadius: 8,
-                  }}
-                >
-                  <ThemedText
-                    style={{ fontSize: 13, textAlign: "center" }}
-                    className="text-white"
-                    numberOfLines={1}
-                  >
-                    {item.title}
-                  </ThemedText>
-                </View>
-              </Pressable>
-            );
-          }}
+          renderItem={({ item }) => (
+            <CategoryCard
+              item={item}
+              active={item.id === selected}
+              tintColor={tintBg(item.id)}
+              onPress={() => setSelected(item.id)}
+              accessibilityLabel={`Category ${item.title}`}
+            />
+          )}
         />
         <View className="px-5 mt-7">
           <View className="min-h-[180px] bg-[#121313] rounded-lg border border-[#121313] overflow-hidden pb-3">
@@ -281,64 +247,11 @@ export default function PosterGeneratorScreen() {
           </View>
         </View>
       </ScrollView>
-      <View className="p-4 mt-1" style={{ paddingBottom: insets.bottom + 16 }}>
-        <TouchableOpacity
-          className="h-14 w-[99%] self-center rounded-xl bg-[#eaeaea] justify-center items-center flex-row px-7 gap-3"
-          onPress={() => {}}
-          accessibilityRole="button"
-        >
-          <View
-            style={{
-              position: "relative",
-              width: 32,
-              height: 32,
-              alignItems: "center",
-              justifyContent: "center",
-            }}
-          >
-            <LinearGradient
-              colors={["#2CE9FF55", "#7C4DFF22"]}
-              start={{ x: 0.3, y: 0.2 }}
-              end={{ x: 0.9, y: 1 }}
-              style={{
-                position: "absolute",
-                width: 30,
-                height: 30,
-                borderRadius: 15,
-                transform: [{ translateX: 2 }, { translateY: 3 }],
-                filter: "blur(3px)" as any,
-                opacity: 1,
-              }}
-            />
-            <View
-              style={{
-                width: 21,
-                height: 21,
-                borderRadius: 10,
-                backgroundColor: "#eaeaea",
-              }}
-            />
-            <LinearGradient
-              colors={["#27D1E7", "#7C4DFF"]}
-              start={{ x: 0, y: 1 }}
-              end={{ x: 1, y: 0 }}
-              style={{
-                width: 16,
-                height: 16,
-                borderRadius: 8,
-                filter: "blur(0.8px)" as any,
-                position: "absolute",
-              }}
-            />
-          </View>
-          <ThemedText
-            style={{ fontSize: 18 }}
-            className="text-[#1C1E22] font-semibold"
-          >
-            Generate
-          </ThemedText>
-        </TouchableOpacity>
-      </View>
+      <GenerateButton
+        style={{ paddingBottom: insets.bottom + 16 }}
+        onPress={() => {}}
+        accessibilityLabel="Generate poster"
+      />
     </ThemedView>
   );
 }

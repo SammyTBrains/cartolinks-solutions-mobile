@@ -1,5 +1,5 @@
 import { Link, Stack } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Text, TouchableOpacity, View } from "react-native";
 
 export default function Index() {
   return (
@@ -13,7 +13,7 @@ export default function Index() {
       <Stack.Screen options={{ headerShown: false }} />
       <View style={{ height: 16 }} />
       <Link href="/poster-generator" asChild>
-        <Pressable
+        <TouchableOpacity
           style={{
             paddingVertical: 12,
             paddingHorizontal: 16,
@@ -21,8 +21,8 @@ export default function Index() {
             borderRadius: 8,
           }}
         >
-          <Text>Open Poster Generator</Text>
-        </Pressable>
+          <Text className="font-semibold">Open Poster Generator</Text>
+        </TouchableOpacity>
       </Link>
     </View>
   );
