@@ -2,6 +2,7 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
+import { BlurView } from "expo-blur";
 import { Image } from "expo-image";
 import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
@@ -71,66 +72,67 @@ export default function PosterGeneratorScreen() {
     <ThemedView style={{ flex: 1 }}>
       <Stack.Screen options={{ headerShown: false }} />
       <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
-        {/* Header with tabs */}
+        {/* Header: X on top, tabs below */}
         <View style={styles.header}>
           <Pressable accessibilityRole="button" style={styles.closeBtn}>
-            <IconSymbol name="xmark" color="#fff" size={22} />
+            <IconSymbol name="xmark" color="#fff" size={24} />
           </Pressable>
 
           <View style={styles.tabsContainer}>
-            <View style={styles.tabsRow}>
-              <Pressable
-                onPress={() => setTab("smart")}
-                onLayout={(e: LayoutChangeEvent) =>
-                  setSmartLayout(e.nativeEvent.layout)
-                }
-              >
-                <ThemedText
-                  style={[
-                    styles.tabText,
-                    tab === "smart" && styles.tabTextActive,
-                  ]}
+            <View style={styles.tabsBlock}>
+              <View style={styles.tabsRow}>
+                <Pressable
+                  onPress={() => setTab("smart")}
+                  onLayout={(e: LayoutChangeEvent) =>
+                    setSmartLayout(e.nativeEvent.layout)
+                  }
                 >
-                  Smart script
-                </ThemedText>
-              </Pressable>
-              <Pressable
-                onPress={() => setTab("advanced")}
-                onLayout={(e: LayoutChangeEvent) =>
-                  setAdvancedLayout(e.nativeEvent.layout)
-                }
-              >
-                <ThemedText
-                  style={[
-                    styles.tabText,
-                    tab === "advanced"
-                      ? styles.tabTextActive
-                      : styles.tabTextInactive,
-                  ]}
+                  <ThemedText
+                    style={[
+                      styles.tabText,
+                      tab === "smart" && styles.tabTextActive,
+                    ]}
+                  >
+                    Smart script
+                  </ThemedText>
+                </Pressable>
+                <Pressable
+                  onPress={() => setTab("advanced")}
+                  onLayout={(e: LayoutChangeEvent) =>
+                    setAdvancedLayout(e.nativeEvent.layout)
+                  }
                 >
-                  Advanced script
-                </ThemedText>
-              </Pressable>
-            </View>
-            {/* Gradient underline under active tab */}
-            <View style={styles.underlineTrack}>
+                  <ThemedText
+                    style={[
+                      styles.tabText,
+                      tab === "advanced"
+                        ? styles.tabTextActive
+                        : styles.tabTextInactive,
+                    ]}
+                  >
+                    Advanced script
+                  </ThemedText>
+                </Pressable>
+              </View>
+              {/* Wider gradient underline */}
               <LinearGradient
                 colors={["#27D1E7", "#7C4DFF"]}
                 start={{ x: 0, y: 0.5 }}
                 end={{ x: 1, y: 0.5 }}
                 style={{
                   position: "absolute",
-                  left: Math.max(active.x - 4, 0),
-                  width: Math.max(active.width + 8, 80),
+                  left: Math.max(active.x - 10, 0),
+                  bottom: -8,
+                  width: Math.max(
+                    Math.min(active.width * 1.8, 260),
+                    active.width + 60
+                  ),
                   height: 3,
                   borderRadius: 3,
                 }}
               />
             </View>
           </View>
-
-          {/* right spacer to balance close icon */}
-          <View style={{ width: 44 }} />
         </View>
         <View style={styles.tabsDivider} />
 
@@ -157,22 +159,31 @@ export default function PosterGeneratorScreen() {
             renderItem={({ item }) => {
               const isActive = item.id === selected;
               return (
-                <View style={{ alignItems: "center" }}>
-                  <Pressable
-                    onPress={() => setSelected(item.id)}
-                    style={[styles.card, isActive && styles.cardActive]}
-                  >
-                    <Image
-                      source={item.image}
-                      style={styles.cardImage}
-                      contentFit="cover"
-                      transition={100}
+                <Pressable
+                  onPress={() => setSelected(item.id)}
+                  style={[styles.card, isActive && styles.cardActive]}
+                >
+                  <Image
+                    source={item.image}
+                    style={styles.cardImage}
+                    contentFit="cover"
+                    transition={100}
+                  />
+                  <View style={styles.cardOverlay}>
+                    <BlurView
+                      intensity={28}
+                      tint="dark"
+                      experimentalBlurMethod="dimezisBlurView"
+                      style={StyleSheet.absoluteFill}
                     />
-                  </Pressable>
-                  <ThemedText style={styles.cardLabel} numberOfLines={1}>
-                    {item.title}
-                  </ThemedText>
-                </View>
+                    <ThemedText
+                      style={styles.cardOverlayText}
+                      numberOfLines={1}
+                    >
+                      {item.title}
+                    </ThemedText>
+                  </View>
+                </Pressable>
               );
             }}
           />
@@ -238,22 +249,23 @@ function SettingRow({ label, value }: { label: string; value: string }) {
 
 const styles = StyleSheet.create({
   header: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
     paddingHorizontal: 16,
-    paddingTop: 8,
+    paddingTop: 6,
   },
   closeBtn: {
-    width: 32,
-    height: 32,
+    width: 44,
+    height: 44,
     justifyContent: "center",
     alignItems: "flex-start",
   },
   tabsContainer: {
-    flex: 1,
+    marginTop: 4,
     alignItems: "center",
-    gap: 8,
+    gap: 12,
+  },
+  tabsBlock: {
+    position: "relative",
+    alignItems: "center",
   },
   tabsRow: {
     flexDirection: "row",
@@ -273,11 +285,7 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   tabsUnderlineContainer: {
-    height: 10,
-  },
-  underlineTrack: {
-    height: 3,
-    marginHorizontal: 16,
+    height: 0,
   },
   tabsDivider: {
     height: StyleSheet.hairlineWidth,
@@ -321,12 +329,23 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
   },
-  cardLabel: {
+  cardOverlay: {
+    position: "absolute",
+    left: 8,
+    right: 8,
+    bottom: 8,
+    height: 36,
+    borderRadius: 12,
+    backgroundColor: "rgba(28,30,34,0.75)",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 10,
+  },
+  cardOverlayText: {
     color: "#FFFFFF",
-    fontSize: 16,
-    fontWeight: "600",
-    marginTop: 8,
-    width: 140,
+    fontSize: 14,
+    fontWeight: "700",
+    flex: 1,
   },
   textArea: {
     minHeight: 180,
