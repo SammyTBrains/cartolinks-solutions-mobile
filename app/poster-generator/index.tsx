@@ -207,7 +207,7 @@ export default function PosterGeneratorScreen() {
             return (
               <Pressable
                 onPress={() => setSelected(item.id)}
-                className={`bg-[#2D2F36] rounded-2xl overflow-hidden ${isActive ? "border-[3px] p-[2px] w-[107px] h-[144px] border-white" : "border w-[102px] h-[139px] border-[#2F3339]"}`}
+                className={`bg-[#2D2F36] rounded-2xl overflow-hidden ${isActive ? "border-[3px] p-[2px] w-[95px] h-[135px] border-white" : "border w-[90px] h-[130px] border-[#2F3339]"}`}
               >
                 <Image
                   source={item.image}
