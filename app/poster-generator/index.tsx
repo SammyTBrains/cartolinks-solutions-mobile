@@ -2,48 +2,46 @@ import { ThemedText } from "@/components/themed-text";
 import { ThemedView } from "@/components/themed-view";
 import { IconSymbol } from "@/components/ui/icon-symbol";
 import { Colors } from "@/constants/theme";
+import { Image } from "expo-image";
+import { LinearGradient } from "expo-linear-gradient";
 import { Stack } from "expo-router";
 import { useState } from "react";
 import {
   FlatList,
+  LayoutChangeEvent,
   Pressable,
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   TextInput,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 const CATEGORIES = [
   {
     id: "display",
     title: "display",
-    subtitle: "Prod",
-    image: require("@/assets/images/react-logo.png"),
+    image: require("@/assets/images/thumbnails/display.jpeg"),
   },
   {
     id: "promotion",
     title: "Promotion",
-    subtitle: "",
-    image: require("@/assets/images/react-logo.png"),
+    image: require("@/assets/images/thumbnails/promotion.jpeg"),
   },
   {
     id: "branding",
     title: "Branding",
-    subtitle: "Editor's Choice",
-    image: require("@/assets/images/react-logo.png"),
+    image: require("@/assets/images/thumbnails/branding.jpeg"),
   },
   {
     id: "announcement",
     title: "Announceme...",
-    subtitle: "",
-    image: require("@/assets/images/react-logo.png"),
+    image: require("@/assets/images/thumbnails/announcement.jpeg"),
   },
   {
     id: "party",
     title: "Party",
-    subtitle: "",
-    image: require("@/assets/images/react-logo.png"),
+    image: require("@/assets/images/thumbnails/Party.jpeg"),
   },
 ];
 
@@ -57,52 +55,84 @@ export default function PosterGeneratorScreen() {
       "toppings in an enticing setting."
   );
 
+  // track tab positions for underline
+  const [smartLayout, setSmartLayout] = useState<{ x: number; width: number }>({
+    x: 0,
+    width: 0,
+  });
+  const [advancedLayout, setAdvancedLayout] = useState<{
+    x: number;
+    width: number;
+  }>({ x: 0, width: 0 });
+
+  const active = tab === "smart" ? smartLayout : advancedLayout;
+
   return (
     <ThemedView style={{ flex: 1 }}>
       <Stack.Screen options={{ headerShown: false }} />
-      <SafeAreaView style={{ flex: 1 }}>
-        <View style={{ paddingHorizontal: 16, paddingTop: 8 }}>
-          {/* Close button */}
-          <Pressable
-            accessibilityRole="button"
-            style={{ width: 32, height: 32, justifyContent: "center" }}
-          >
+      <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+        {/* Header with tabs */}
+        <View style={styles.header}>
+          <Pressable accessibilityRole="button" style={styles.closeBtn}>
             <IconSymbol name="xmark" color="#fff" size={22} />
           </Pressable>
 
-          {/* Segmented control */}
-          <View style={styles.segmented}>
-            <Pressable
-              style={[styles.segment, tab === "smart" && styles.segmentActive]}
-              onPress={() => setTab("smart")}
-            >
-              <ThemedText
-                style={[
-                  styles.segmentText,
-                  tab === "smart" && styles.segmentTextActive,
-                ]}
+          <View style={styles.tabsContainer}>
+            <View style={styles.tabsRow}>
+              <Pressable
+                onPress={() => setTab("smart")}
+                onLayout={(e: LayoutChangeEvent) =>
+                  setSmartLayout(e.nativeEvent.layout)
+                }
               >
-                Smart script
-              </ThemedText>
-            </Pressable>
-            <Pressable
-              style={[
-                styles.segment,
-                tab === "advanced" && styles.segmentActive,
-              ]}
-              onPress={() => setTab("advanced")}
-            >
-              <ThemedText
-                style={[
-                  styles.segmentText,
-                  tab === "advanced" && styles.segmentTextActive,
-                ]}
+                <ThemedText
+                  style={[
+                    styles.tabText,
+                    tab === "smart" && styles.tabTextActive,
+                  ]}
+                >
+                  Smart script
+                </ThemedText>
+              </Pressable>
+              <Pressable
+                onPress={() => setTab("advanced")}
+                onLayout={(e: LayoutChangeEvent) =>
+                  setAdvancedLayout(e.nativeEvent.layout)
+                }
               >
-                Advanced script
-              </ThemedText>
-            </Pressable>
+                <ThemedText
+                  style={[
+                    styles.tabText,
+                    tab === "advanced"
+                      ? styles.tabTextActive
+                      : styles.tabTextInactive,
+                  ]}
+                >
+                  Advanced script
+                </ThemedText>
+              </Pressable>
+            </View>
+            {/* Gradient underline under active tab */}
+            <View style={styles.underlineTrack}>
+              <LinearGradient
+                colors={["#27D1E7", "#7C4DFF"]}
+                start={{ x: 0, y: 0.5 }}
+                end={{ x: 1, y: 0.5 }}
+                style={{
+                  position: "absolute",
+                  left: Math.max(active.x - 4, 0),
+                  width: Math.max(active.width + 8, 80),
+                  height: 3,
+                  borderRadius: 3,
+                }}
+              />
+            </View>
           </View>
+
+          {/* right spacer to balance close icon */}
+          <View style={{ width: 44 }} />
         </View>
+        <View style={styles.tabsDivider} />
 
         <ScrollView
           contentContainerStyle={{ paddingBottom: 120 }}
@@ -123,22 +153,26 @@ export default function PosterGeneratorScreen() {
             data={CATEGORIES}
             keyExtractor={(i) => i.id}
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={{ paddingHorizontal: 16, gap: 12 }}
+            contentContainerStyle={{ paddingHorizontal: 16, gap: 14 }}
             renderItem={({ item }) => {
-              const active = item.id === selected;
+              const isActive = item.id === selected;
               return (
-                <Pressable
-                  onPress={() => setSelected(item.id)}
-                  style={[styles.card, active && styles.cardActive]}
-                >
-                  <ThemedText style={styles.cardSubtitle}>
-                    {item.subtitle || " "}
-                  </ThemedText>
-                  <View style={{ flex: 1 }} />
-                  <ThemedText style={styles.cardTitle} numberOfLines={1}>
+                <View style={{ alignItems: "center" }}>
+                  <Pressable
+                    onPress={() => setSelected(item.id)}
+                    style={[styles.card, isActive && styles.cardActive]}
+                  >
+                    <Image
+                      source={item.image}
+                      style={styles.cardImage}
+                      contentFit="cover"
+                      transition={100}
+                    />
+                  </Pressable>
+                  <ThemedText style={styles.cardLabel} numberOfLines={1}>
                     {item.title}
                   </ThemedText>
-                </Pressable>
+                </View>
               );
             }}
           />
@@ -173,12 +207,18 @@ export default function PosterGeneratorScreen() {
           </View>
         </ScrollView>
 
-        {/* Generate button */}
-        <View style={styles.footer}>
-          <Pressable style={styles.generateBtn} onPress={() => {}}>
-            <ThemedText style={styles.generateText}>Generate</ThemedText>
-          </Pressable>
-        </View>
+        {/* Generate button with bottom safe-area inset */}
+        <SafeAreaView
+          edges={["bottom"]}
+          style={styles.footerSa}
+          pointerEvents="box-none"
+        >
+          <View style={styles.footer}>
+            <Pressable style={styles.generateBtn} onPress={() => {}}>
+              <ThemedText style={styles.generateText}>Generate</ThemedText>
+            </Pressable>
+          </View>
+        </SafeAreaView>
       </SafeAreaView>
     </ThemedView>
   );
@@ -197,6 +237,52 @@ function SettingRow({ label, value }: { label: string; value: string }) {
 }
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    paddingTop: 8,
+  },
+  closeBtn: {
+    width: 32,
+    height: 32,
+    justifyContent: "center",
+    alignItems: "flex-start",
+  },
+  tabsContainer: {
+    flex: 1,
+    alignItems: "center",
+    gap: 8,
+  },
+  tabsRow: {
+    flexDirection: "row",
+    gap: 24,
+    alignItems: "center",
+  },
+  tabText: {
+    fontSize: 18,
+    fontWeight: "700",
+    color: "#9BA1A6",
+  },
+  tabTextActive: {
+    color: "#FFFFFF",
+  },
+  tabTextInactive: {
+    color: "#6F7782",
+    fontWeight: "600",
+  },
+  tabsUnderlineContainer: {
+    height: 10,
+  },
+  underlineTrack: {
+    height: 3,
+    marginHorizontal: 16,
+  },
+  tabsDivider: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: "#1E2126",
+  },
   segmented: {
     flexDirection: "row",
     backgroundColor: "#101114",
@@ -225,31 +311,22 @@ const styles = StyleSheet.create({
     height: 160,
     backgroundColor: "#2D2F36",
     borderRadius: 18,
-    padding: 12,
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowOffset: { width: 0, height: 8 },
-    shadowRadius: 12,
-    elevation: 4,
+    overflow: "hidden",
   },
   cardActive: {
     borderWidth: 2,
-    borderColor: "#6C6EF5",
+    borderColor: "#FFFFFF",
   },
-  cardSubtitle: {
-    backgroundColor: "#3A3D45",
-    alignSelf: "flex-start",
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 6,
-    color: "#C6C9D2",
-    fontSize: 12,
-    overflow: "hidden",
+  cardImage: {
+    width: "100%",
+    height: "100%",
   },
-  cardTitle: {
-    color: "#fff",
+  cardLabel: {
+    color: "#FFFFFF",
     fontSize: 16,
-    fontWeight: "700",
+    fontWeight: "600",
+    marginTop: 8,
+    width: 140,
   },
   textArea: {
     minHeight: 180,
@@ -306,5 +383,11 @@ const styles = StyleSheet.create({
     color: "#1C1E22",
     fontWeight: "700",
     fontSize: 18,
+  },
+  footerSa: {
+    position: "absolute",
+    left: 0,
+    right: 0,
+    bottom: 0,
   },
 });
