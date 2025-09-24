@@ -9,18 +9,27 @@ import { useState } from "react";
 import {
   FlatList,
   LayoutChangeEvent,
+  Platform,
   Pressable,
   ScrollView,
   TextInput,
   View,
 } from "react-native";
 
-const CATEGORIES = [
+type Category = {
+  id: string;
+  title: string;
+  image: any;
+  tags?: string[];
+  badge?: string;
+};
+
+const CATEGORIES: Category[] = [
   {
     id: "display",
     title: "display",
-    // Use relative require for first item to rule out any path alias issue with assets
     image: require("../../assets/images/thumbnails/display.jpeg"),
+    tags: ["display", "Prod"],
   },
   {
     id: "promotion",
@@ -31,6 +40,7 @@ const CATEGORIES = [
     id: "branding",
     title: "Branding",
     image: require("../../assets/images/thumbnails/branding.jpeg"),
+    badge: "Editor's Choice",
   },
   {
     id: "announcement",
@@ -70,8 +80,11 @@ export default function PosterGeneratorScreen() {
   return (
     <ThemedView className="flex-1">
       <Stack.Screen options={{ headerShown: false }} />
-      {/* Header: X on top, tabs below */}
-      <View className="px-4 pt-1.5">
+      {/* Header + tabs */}
+      <View
+        className="px-4"
+        style={{ paddingTop: Platform.OS === "ios" ? 8 : 8 }}
+      >
         <Pressable
           accessibilityRole="button"
           className="w-11 h-11 justify-center items-start"
@@ -112,7 +125,7 @@ export default function PosterGeneratorScreen() {
                 </ThemedText>
               </Pressable>
             </View>
-            {/* Wider gradient underline */}
+            {/* Gradient underline extended */}
             <LinearGradient
               colors={["#27D1E7", "#7C4DFF"]}
               start={{ x: 0, y: 0.5 }}
@@ -157,7 +170,7 @@ export default function PosterGeneratorScreen() {
               <Pressable
                 onPress={() => setSelected(item.id)}
                 className={`w-[140px] h-40 bg-[#2D2F36] rounded-2xl overflow-hidden ${
-                  isActive ? "border-2 border-white" : ""
+                  isActive ? "border-2 border-white" : "border border-[#2F3339]"
                 }`}
               >
                 <Image
@@ -169,13 +182,36 @@ export default function PosterGeneratorScreen() {
                   }}
                   transition={100}
                 />
-                <View className="absolute left-2 right-2 bottom-2 h-9 rounded-xl bg-[rgba(28,30,34,0.75)] flex-row items-center px-2.5">
-                  <ThemedText
-                    className="text-white text-sm font-bold flex-1"
-                    numberOfLines={1}
-                  >
-                    {item.title}
-                  </ThemedText>
+                {item.badge ? (
+                  <View className="absolute top-2 left-2 bg-[#1C1E22CC] px-2 py-1 rounded-lg border border-[#2F3238]">
+                    <ThemedText className="text-[10px] font-semibold text-white">
+                      {item.badge}
+                    </ThemedText>
+                  </View>
+                ) : null}
+                <View className="absolute left-2 right-2 bottom-2 rounded-xl bg-[rgba(28,30,34,0.75)] flex-row items-center px-2.5 py-2 gap-1 flex-wrap">
+                  {item.tags ? (
+                    item.tags.map((t) => (
+                      <View
+                        key={t}
+                        className="px-2 h-6 rounded-lg bg-[rgba(60,63,70,0.65)] justify-center"
+                      >
+                        <ThemedText
+                          className="text-white text-[11px] font-semibold"
+                          numberOfLines={1}
+                        >
+                          {t}
+                        </ThemedText>
+                      </View>
+                    ))
+                  ) : (
+                    <ThemedText
+                      className="text-white text-sm font-bold flex-1"
+                      numberOfLines={1}
+                    >
+                      {item.title}
+                    </ThemedText>
+                  )}
                 </View>
               </Pressable>
             );
@@ -216,16 +252,17 @@ export default function PosterGeneratorScreen() {
           <SettingRow label="Size" value="1080 x 1920 px" />
           <SettingRow label="Category" value="Foods and beverage" />
         </View>
-        <View className="absolute left-0 right-0 bottom-0 p-4 bg-[rgba(10,10,12,0.6)] gap-4">
+        <View className="absolute left-0 right-0 bottom-0 p-4 pb-8 bg-[rgba(10,10,12,0.6)] gap-4">
           <Pressable
             className="h-14 rounded-full bg-[#F1F2FF] justify-center items-center flex-row px-6 gap-3"
             onPress={() => {}}
+            accessibilityRole="button"
           >
             <LinearGradient
               colors={["#27D1E7", "#7C4DFF"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={{ width: 28, height: 28, borderRadius: 14 }}
+              style={{ width: 30, height: 30, borderRadius: 15 }}
             />
             <ThemedText className="text-[#1C1E22] font-bold text-lg">
               Generate
