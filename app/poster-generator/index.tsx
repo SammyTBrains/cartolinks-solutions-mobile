@@ -29,6 +29,7 @@ const CATEGORIES: Category[] = [
     id: "display",
     title: "display",
     image: require("../../assets/images/thumbnails/display.jpeg"),
+    // first card shows two inline text labels in the bottom bar
     tags: ["display", "Prod"],
   },
   {
@@ -151,8 +152,11 @@ export default function PosterGeneratorScreen() {
         contentContainerStyle={{ paddingBottom: 120 }}
         showsVerticalScrollIndicator={false}
       >
-        <View className="px-4 pt-3">
-          <ThemedText type="title" className="text-2xl leading-8 mb-3">
+        <View className="px-5 pt-5">
+          <ThemedText
+            type="title"
+            className="text-white text-[23px] leading-8 font-bold mb-4"
+          >
             What type of posters do you want to create?
           </ThemedText>
         </View>
@@ -182,6 +186,17 @@ export default function PosterGeneratorScreen() {
                   }}
                   transition={100}
                 />
+                {/* subtle bottom gradient for readability */}
+                <LinearGradient
+                  colors={["rgba(0,0,0,0)", "rgba(0,0,0,0.65)"]}
+                  style={{
+                    position: "absolute",
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    top: 0,
+                  }}
+                />
                 {item.badge ? (
                   <View className="absolute top-2 left-2 bg-[#1C1E22CC] px-2 py-1 rounded-lg border border-[#2F3238]">
                     <ThemedText className="text-[10px] font-semibold text-white">
@@ -189,21 +204,25 @@ export default function PosterGeneratorScreen() {
                     </ThemedText>
                   </View>
                 ) : null}
-                <View className="absolute left-2 right-2 bottom-2 rounded-xl bg-[rgba(28,30,34,0.75)] flex-row items-center px-2.5 py-2 gap-1 flex-wrap">
-                  {item.tags ? (
-                    item.tags.map((t) => (
-                      <View
-                        key={t}
-                        className="px-2 h-6 rounded-lg bg-[rgba(60,63,70,0.65)] justify-center"
+                <View className="absolute left-2 right-2 bottom-2 h-9 rounded-xl bg-[rgba(28,30,34,0.75)] flex-row items-center px-2.5">
+                  {item.tags && item.tags.length > 0 ? (
+                    // Inline two text labels (deduplicate in case of accidental repeats)
+                    <>
+                      <ThemedText
+                        className="text-white text-sm font-bold flex-1"
+                        numberOfLines={1}
                       >
+                        {item.tags[0]}
+                      </ThemedText>
+                      {item.tags[1] && item.tags[1] !== item.tags[0] ? (
                         <ThemedText
-                          className="text-white text-[11px] font-semibold"
+                          className="text-white text-sm font-bold"
                           numberOfLines={1}
                         >
-                          {t}
+                          {item.tags[1]}
                         </ThemedText>
-                      </View>
-                    ))
+                      ) : null}
+                    </>
                   ) : (
                     <ThemedText
                       className="text-white text-sm font-bold flex-1"
@@ -219,7 +238,7 @@ export default function PosterGeneratorScreen() {
         />
 
         {/* Prompt text area */}
-        <View className="px-4 pt-4">
+        <View className="px-5 pt-5">
           <View className="min-h-[180px] bg-[#1C1E22] rounded-2xl border border-[#2B2E35] overflow-hidden pb-3">
             <TextInput
               multiline
@@ -245,7 +264,7 @@ export default function PosterGeneratorScreen() {
         </View>
 
         {/* Settings */}
-        <View className="px-4 pt-2">
+        <View className="px-5 pt-4">
           <ThemedText className="text-[15px] font-semibold text-[#9BA1A6] mb-1">
             Settings
           </ThemedText>
@@ -276,7 +295,7 @@ export default function PosterGeneratorScreen() {
 
 function SettingRow({ label, value }: { label: string; value: string }) {
   return (
-    <View className="h-16 bg-[#1C1E22] rounded-2xl border border-[#2B2E35] px-4 flex-row items-center mb-3">
+    <View className="h-16 bg-[#1C1E22] rounded-2xl border border-[#2B2E35] px-5 flex-row items-center mb-3">
       <ThemedText className="text-[#9BA1A6] text-base">{label}</ThemedText>
       <View style={{ flex: 1 }} />
       <ThemedText className="text-white text-base font-semibold">
