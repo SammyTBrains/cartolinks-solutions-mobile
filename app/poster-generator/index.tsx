@@ -76,10 +76,10 @@ export default function PosterGeneratorScreen() {
 
   const CARD_TINTS: Record<string, string> = {
     display: "#5F4937",
-    promotion: "#6A6A6A",
-    branding: "#3F4247",
-    announcement: "#0C7FAF",
-    party: "#5D3F2D",
+    promotion: "#9c2e6be9",
+    branding: "#1e6b9bff",
+    announcement: "#b6741dff",
+    party: "#844e2cff",
   };
   // Return the raw hex for a solid background (design uses solid colors)
   const tintBg = (id: string) => {
@@ -87,7 +87,6 @@ export default function PosterGeneratorScreen() {
   };
 
   // Design tuning constants
-  const TAB_INACTIVE_COLOR = "#9ba1a6e1"; // closer to design's gray
   const UNDERLINE_HEIGHT = 4;
   const UNDERLINE_BOTTOM_OFFSET = -14; // sit a touch lower relative to text baseline
   const UNDERLINE_SIDE_EXPAND = 4; // how much to grow beyond measured text width when active
@@ -146,7 +145,7 @@ export default function PosterGeneratorScreen() {
                 }
               >
                 <ThemedText
-                  className={`text-base px-9 mr-2 ${tab === "smart" ? "text-white font-semibold" : `text-[${TAB_INACTIVE_COLOR}]`}`}
+                  className={`text-base px-9 mr-2 ${tab === "smart" ? "text-white font-semibold" : `text-[#9ba1a6e1]`}`}
                 >
                   Smart script
                 </ThemedText>
@@ -158,7 +157,7 @@ export default function PosterGeneratorScreen() {
                 }
               >
                 <ThemedText
-                  className={`text-base px-9 ${tab === "advanced" ? "text-white font-semibold" : `text-[${TAB_INACTIVE_COLOR}]`}`}
+                  className={`text-base px-9 ${tab === "advanced" ? "text-white font-semibold" : `text-[#9ba1a6e1]`}`}
                 >
                   Advanced script
                 </ThemedText>
@@ -206,11 +205,11 @@ export default function PosterGeneratorScreen() {
             return (
               <Pressable
                 onPress={() => setSelected(item.id)}
-                className={`w-[105px] h-[144px] bg-[#2D2F36] rounded-2xl overflow-hidden ${isActive ? "border-2 border-white" : "border border-[#2F3339]"}`}
+                className={`bg-[#2D2F36] rounded-2xl overflow-hidden ${isActive ? "border-[3px] p-[2px] w-[107px] h-[144px] border-white" : "border w-[102px] h-[139px] border-[#2F3339]"}`}
               >
                 <Image
                   source={item.image}
-                  style={{ width: "100%", height: "100%" }}
+                  style={{ width: "100%", height: "100%", borderRadius: 8 }}
                   contentFit="cover"
                   onError={(error) =>
                     console.warn("Image failed to load", item.id, error)
@@ -228,7 +227,7 @@ export default function PosterGeneratorScreen() {
                   }}
                 />
                 <View
-                  className="absolute left-0 right-0 bottom-0 h-10 flex-row items-center px-3"
+                  className={`absolute ${isActive ? "left-[2px] right-[2px] bottom-[2px]" : "left-0 right-0 bottom-0"} h-10 flex-row items-center px-3`}
                   style={{
                     backgroundColor: tintBg(item.id),
                     borderBottomLeftRadius: 8,
