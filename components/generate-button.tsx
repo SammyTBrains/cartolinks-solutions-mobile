@@ -1,6 +1,6 @@
 import { ThemedText } from "@/components/themed-text";
 import { LinearGradient } from "expo-linear-gradient";
-import { Pressable, View, ViewStyle } from "react-native";
+import { TouchableOpacity, View, ViewStyle } from "react-native";
 
 interface GenerateButtonProps {
   onPress: () => void;
@@ -17,7 +17,7 @@ export function GenerateButton({
 }: GenerateButtonProps) {
   return (
     <View className="p-4 mt-1" style={style}>
-      <Pressable
+      <TouchableOpacity
         accessibilityRole="button"
         accessibilityLabel={accessibilityLabel}
         disabled={disabled}
@@ -77,7 +77,7 @@ export function GenerateButton({
         >
           Generate
         </ThemedText>
-      </Pressable>
+      </TouchableOpacity>
     </View>
   );
 }

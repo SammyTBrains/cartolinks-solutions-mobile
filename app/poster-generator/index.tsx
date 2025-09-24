@@ -267,7 +267,7 @@ function SettingRow({
 }) {
   return (
     <View>
-      <View className="h-14 px-5 flex-row items-center">
+      <TouchableOpacity className="h-14 px-5 flex-row items-center">
         <ThemedText className="text-[#9BA1A6] font-normal text-[15px]">
           {label}
         </ThemedText>
@@ -277,7 +277,7 @@ function SettingRow({
         </ThemedText>
         <View style={{ width: 6 }} />
         <IconSymbol name="chevron.right" color="#9BA1A6" size={18} />
-      </View>
+      </TouchableOpacity>
       {!isLast && <View className="h-px bg-[#1e21266d] mx-5" />}
     </View>
   );
