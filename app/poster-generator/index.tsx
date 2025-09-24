@@ -306,13 +306,23 @@ export default function PosterGeneratorScreen() {
               style={{
                 position: "absolute",
                 // Slightly larger so the shifted glow still fully shows
-                width: 34,
-                height: 34,
-                borderRadius: 17,
+                width: 30,
+                height: 30,
+                borderRadius: 15,
                 // Shift glow a bit to the bottom-right
-                transform: [{ translateX: 4 }, { translateY: 4 }],
-                filter: "blur(8px)" as any, // retained since you confirmed blur works on your target
+                transform: [{ translateX: 2 }, { translateY: 3 }],
+                filter: "blur(3px)" as any, // retained since you confirmed blur works on your target
                 opacity: 1,
+              }}
+            />
+            {/* Inner spacing ring (creates the subtle gap) */}
+            <View
+              style={{
+                width: 21,
+                height: 21,
+                borderRadius: 10,
+                backgroundColor: "#eaeaea", // match button background so it reads as space
+                // Optional slight elevation separation; tweak if needed
               }}
             />
             {/* Core gradient dot */}
@@ -320,7 +330,13 @@ export default function PosterGeneratorScreen() {
               colors={["#27D1E7", "#7C4DFF"]}
               start={{ x: 0, y: 0 }}
               end={{ x: 1, y: 1 }}
-              style={{ width: 16, height: 16, borderRadius: 8 }}
+              style={{
+                width: 16,
+                height: 16,
+                borderRadius: 8,
+                filter: "blur(0.8px)" as any,
+                position: "absolute",
+              }}
             />
           </View>
           <ThemedText
